@@ -6,6 +6,7 @@ import Mongo.src.classes.GardenShop;
 import java.util.List;
 
 public class MongoDAO implements DAO {
+    
 
     @Override
     public List<GardenShop> seeGardenShops() {
