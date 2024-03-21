@@ -1,19 +1,23 @@
 package Generic.classes;
 
 public class Stock {
-    private final String product_id;
+    private String product_id;
     private final Types type;
     private double price;
     private int quantity;
     private final String quality;
 
 
-    public Stock (String product_id, Types type, double price, int quantity, String quality){
-        this.product_id = product_id;
+    public Stock(Types type, double price, int quantity, String quality){
+        this.product_id = "";
         this.type = type;
         this.price = price;
         this.quantity = quantity;
         this.quality = quality;
+    }
+    public Stock (String product_id, Types type, double price, int quantity, String quality){
+        this(type, price, quantity, quality);
+        this.product_id = product_id;
     }
 
     public void setQuantity(int quantity) {
