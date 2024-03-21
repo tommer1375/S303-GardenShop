@@ -12,8 +12,6 @@ JOIN tickets t ON p.idtickets = t.idtickets
 JOIN stores s ON t.idstore = s.idstores
 WHERE s.name = 'Tienda Uno';
 
-
-
 -- Valor de los productos de una tienda
 SELECT SUM(p.price * s.quantity) AS total_value
 FROM stock s

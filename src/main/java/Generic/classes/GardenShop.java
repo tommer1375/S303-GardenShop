@@ -1,4 +1,4 @@
-package Mongo.src.classes;
+package Generic.classes;
 
 public class GardenShop {
 }
