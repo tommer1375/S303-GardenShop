@@ -14,9 +14,24 @@ public class GardenShop {
         this.name = name;
     }
 
+//    Getters
+//    Setters
+
+    private String getStock(){
+        String textToReturn = this.name + "'s stock:";
+        if (this.stockList.isEmpty()){
+            return textToReturn = textToReturn.concat("\n\t- Empty.");
+        }
+
+        for (Stock stock : stockList){
+            textToReturn = textToReturn.concat(stock.toString());
+        }
+
+        return textToReturn;
+    }
     @Override
     public String toString() {
-        return "\n- Store_id: " + this._id
-                + "\n - Name: " + this.name ;
+        return "\n\t- Store_id: " + this._id
+                + "\n\t\t- Name: " + this.name;
     }
 }

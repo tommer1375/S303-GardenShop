@@ -12,11 +12,12 @@ import com.mongodb.client.MongoDatabase;
 
 import java.util.List;
 
-public class MongoDAO implements DAO {
+public enum MongoDAO implements DAO {
+    INSTANCE;
     private final MongoClient mongoClient;
     private final MongoDatabase mongoDatabase;
 
-    public MongoDAO(){
+    MongoDAO(){
         ConnectionString connectionString = new ConnectionString("mongodb://"
                 + MongoConfig.USER + ":"
                 + MongoConfig.PASSWORD + "@"
@@ -30,7 +31,6 @@ public class MongoDAO implements DAO {
         this.mongoClient = MongoClients.create(mongoClientSettings);
         this.mongoDatabase = this.mongoClient.getDatabase("gardenShop");
     }
-
 
 //    Create methods implemented
     @Override
