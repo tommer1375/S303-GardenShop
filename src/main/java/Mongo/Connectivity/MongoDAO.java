@@ -32,52 +32,59 @@ public class MongoDAO implements DAO {
     }
 
 
+//    Create methods implemented
     @Override
-    public List<GardenShop> seeGardenShops() {
+    public void createGardenShop() {
+
+    }
+    @Override
+    public void createStock() {
+
+    }
+    @Override
+    public void createTicket() {
+
+    }
+
+//    Read methods implemented
+    @Override
+    public List<GardenShop> readGardenShops() {
         return null;
     }
     @Override
-    public List<Products> seeShopStock() {
+    public List<Products> readShopStock() {
         return null;
     }
     @Override
-    public String seeShopValue() {
+    public String readShopValue() {
         return null;
     }
     @Override
-    public String seeSalesValue() {
+    public String readSalesValue() {
         return null;
     }
     @Override
-    public List<Tickets> seeOldPurchases() {
+    public List<Tickets> readOldPurchases() {
         return null;
     }
+
+//    Update methods implemented
     @Override
-    public void addGardenShop() {
+    public void updateGardenShop() {
 
     }
     @Override
-    public void modifyGardenShop() {
+    public void updateStock() {
+
+    }
+
+//    Delete methods impelemted
+    @Override
+    public void deleteGardenShop() {
 
     }
     @Override
-    public void removeGardenShop() {
-
-    }
-    @Override
-    public void addStock() {
-
-    }
-    @Override
-    public void modifyStock() {
-
-    }
-    @Override
-    public void removeStock() {
-
-    }
-    @Override
-    public void addTicket() {
+    public void deleteStock() {
 
     }
 }

@@ -3,7 +3,7 @@ db.createCollection('tickets', {
     $jsonSchema: {
       bsonType: 'object',
       title: 'tickets',
-      required: ['store_id'],
+      required: ['store_id', 'total'],
       properties: {
         store_id: {
           bsonType: 'objectId'
@@ -12,6 +12,7 @@ db.createCollection('tickets', {
           bsonType: 'array',
           items: {
             title: 'object',
+            required: ['product_id', 'quantity', 'total'],
             properties: {
               product_id: {
                 bsonType: 'objectId'
@@ -24,6 +25,9 @@ db.createCollection('tickets', {
               }
             }
           }
+        },
+        total: {
+          bsonType: 'double'
         }
       }
     }

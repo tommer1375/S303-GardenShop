@@ -7,19 +7,23 @@ import Generic.classes.Tickets;
 import java.util.List;
 
 public interface DAO {
-//    Creation and modification methods
-    void addGardenShop();
-    void modifyGardenShop();
-    void removeGardenShop();
-    void addStock();
-    void modifyStock();
-    void removeStock();
-    void addTicket();
+//    Creation methods
+    void createGardenShop();
+    void createStock();
+    void createTicket();
 
-//    Visualization methods
-    List<GardenShop> seeGardenShops();
-    List<Products> seeShopStock();
-    String seeShopValue();
-    String seeSalesValue();
-    List<Tickets> seeOldPurchases();
+//    Read methods
+    List<GardenShop> readGardenShops();
+    List<Products> readShopStock();
+    String readShopValue();
+    String readSalesValue();
+    List<Tickets> readOldPurchases();
+
+//    Update methods
+    void updateGardenShop();
+    void updateStock();
+
+//    Delete methods
+    void deleteGardenShop();
+    void deleteStock();
 }
