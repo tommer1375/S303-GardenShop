@@ -67,6 +67,10 @@ public enum MongoDAO implements DAO {
         return gardenShopsList;
     }
     @Override
+    public Document readGardenShop(String name){
+        return collectionsList.get(Collections.STORES.getIndex()).find(new Document("name", name)).first();
+    }
+    @Override
     public List<Products> readShopStock() {
         return null;
     }

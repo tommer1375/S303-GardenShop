@@ -2,7 +2,7 @@ package Mongo.Managers.Stores;
 
 import Generic.Utilities.Input;
 import Mongo.Connectivity.MongoDAO;
-import Mongo.Managers.Stores.stock.StockFactory;
+import Mongo.Managers.Stores.stock.StockManager;
 import Generic.Utilities.MongoUtilities;
 import org.bson.Document;
 
@@ -13,7 +13,7 @@ public class GardenShopManager {
     public static void createGardenShop(){
         String name = Input.readString("Introduce the name of the Garden Shop you'd like to create.");
 
-        ArrayList<Document> stock = StockFactory.createStock();
+        ArrayList<Document> stock = StockManager.createShopStock();
 
         double currentValue = MongoUtilities.getCurrentValue(stock);
 
@@ -33,6 +33,23 @@ public class GardenShopManager {
         System.out.println(activeGardenShopPrintable);
     }
     public static void enterGardenShop(){
+        String name = Input.readString("Introduce the name of the Garden Shop whose Management System you'd like to enter.");
 
+        boolean isInDatabase = MongoUtilities.enterGardenShop(name);
+
+        if (!isInDatabase){
+            System.out.println("That garden shop isn't registered in our system.");
+            return;
+        }
+
+        while(true){
+            switch (Input.readInt("Choose what you'd like to do in the " + name + "store:"
+                            + """
+                                0. Exit store.
+                                """)){
+                case 0 -> {return;}
+
+            }
+        }
     }
 }

@@ -14,6 +14,7 @@ public interface DAO {
 
 //    Read methods
     List<Document> readGardenShops();
+    Document readGardenShop(String name);
     List<Products> readShopStock();
     String readShopValue();
     String readSalesValue();
