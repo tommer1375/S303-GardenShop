@@ -1,6 +1,7 @@
 package Generic.classes;
 
-import Mongo.src.code.qualities.Quality;
+import Mongo.Managers.Stores.stock.qualities.Quality;
+import Mongo.Managers.Stores.stock.qualities.Types;
 
 public class Stock {
     private String product_id;

@@ -1,6 +1,5 @@
 package Generic;
 
-import Generic.classes.GardenShop;
 import Generic.classes.Products;
 import Generic.classes.Tickets;
 import org.bson.Document;
@@ -14,7 +13,7 @@ public interface DAO {
     void createTicket();
 
 //    Read methods
-    List<GardenShop> readGardenShops();
+    List<Document> readGardenShops();
     List<Products> readShopStock();
     String readShopValue();
     String readSalesValue();

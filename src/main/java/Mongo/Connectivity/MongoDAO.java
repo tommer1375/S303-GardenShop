@@ -1,21 +1,16 @@
 package Mongo.Connectivity;
 
 import Generic.DAO;
-import Generic.classes.GardenShop;
 import Generic.classes.Products;
 import Generic.classes.Tickets;
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.*;
 import com.mongodb.client.model.InsertOneOptions;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public enum MongoDAO implements DAO {
@@ -48,12 +43,13 @@ public enum MongoDAO implements DAO {
         Document gardenShop = new Document("_id", new ObjectId())
                 .append("name", name)
                 .append("stock", stock)
-                .append("current_value", currentValue);
+                .append("current_value", currentValue)
+                .append("status", "Active");
 
         InsertOneOptions options = new InsertOneOptions()
                 .bypassDocumentValidation(false);
 
-        collectionsList.get(Collections.STORES.getPlace()).insertOne(gardenShop, options);
+        collectionsList.get(Collections.STORES.getIndex()).insertOne(gardenShop, options);
     }
     @Override
     public void createTicket() {
@@ -62,8 +58,13 @@ public enum MongoDAO implements DAO {
 
 //    Read methods implemented
     @Override
-    public List<GardenShop> readGardenShops() {
-        return null;
+    public List<Document> readGardenShops() {
+        List<Document> gardenShopsList = new ArrayList<>();
+        FindIterable<Document> stores = collectionsList.get(Collections.STORES.getIndex()).find();
+
+        stores.forEach(gardenShopsList::add);
+
+        return gardenShopsList;
     }
     @Override
     public List<Products> readShopStock() {

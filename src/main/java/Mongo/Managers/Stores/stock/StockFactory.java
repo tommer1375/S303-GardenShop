@@ -1,13 +1,12 @@
-package Mongo.Factories;
+package Mongo.Managers.Stores.stock;
 
-import Generic.Input;
-import Generic.classes.Stock;
-import Generic.classes.Types;
-import Mongo.src.code.qualities.Color;
-import Mongo.src.code.qualities.Decoration;
-import Mongo.src.code.qualities.Error;
-import Mongo.src.code.qualities.Height;
-import Mongo.src.code.qualities.Quality;
+import Generic.Utilities.Input;
+import Mongo.Managers.Stores.stock.qualities.Types;
+import Mongo.Managers.Stores.stock.qualities.Color;
+import Mongo.Managers.Stores.stock.qualities.Decoration;
+import Mongo.Managers.Stores.stock.qualities.Error;
+import Mongo.Managers.Stores.stock.qualities.Height;
+import Mongo.Managers.Stores.stock.qualities.Quality;
 import org.bson.Document;
 
 import java.util.ArrayList;

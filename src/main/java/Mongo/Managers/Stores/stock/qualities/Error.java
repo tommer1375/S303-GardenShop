@@ -1,4 +1,4 @@
-package Mongo.src.code.qualities;
+package Mongo.Managers.Stores.stock.qualities;
 
 public enum Error implements Quality {
     TREE,

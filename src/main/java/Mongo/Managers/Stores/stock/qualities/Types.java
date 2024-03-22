@@ -1,4 +1,4 @@
-package Generic.classes;
+package Mongo.Managers.Stores.stock.qualities;
 
 public enum Types {
     TREE("Tree"),

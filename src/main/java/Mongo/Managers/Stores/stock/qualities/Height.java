@@ -1,6 +1,4 @@
-package Mongo.src.code.qualities;
-
-import Generic.Input;
+package Mongo.Managers.Stores.stock.qualities;
 
 public enum Height implements Quality {
     SMALL,

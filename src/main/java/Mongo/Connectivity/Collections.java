@@ -4,13 +4,13 @@ public enum Collections {
     STORES(0),
     TICKETS(1);
 
-    private final int place;
+    private final int index;
 
-    Collections(int place) {
-        this.place = place;
+    Collections(int index) {
+        this.index = index;
     }
 
-    public int getPlace() {
-        return place;
+    public int getIndex() {
+        return index;
     }
 }

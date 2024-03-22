@@ -1,4 +1,4 @@
-package Generic;
+package Generic.Utilities;
 
 import java.util.InputMismatchException;
 import java.util.Scanner;

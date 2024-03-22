@@ -1,10 +1,19 @@
 package Mongo.src;
 
-import Generic.Input;
-import Mongo.Factories.GardenShopFactory;
+import Generic.ConnectType;
+import Generic.Utilities.Input;
+import Mongo.Managers.Stores.GardenShopManager;
 
 public class Helper {
-    protected static void managerStart(){
+    @SuppressWarnings("SameParameterValue")
+    protected static void connectWith(ConnectType connectType){
+        switch (connectType){
+            case MySQL -> connectToMySQL();
+            case MONGO -> connectToMongo();
+            case CHOOSE -> System.out.println("Please choose a connection type before turning on the machine.");
+        }
+    }
+    private static void connectToMongo(){
         while(true){
             switch (Input.readInt("""
                     Welcome to our GardenShopManager™! Choose your option:
@@ -14,13 +23,13 @@ public class Helper {
                     4. Exit.
                     """)){
                 case 1:
-                    createGardenShop();
+                    GardenShopManager.createGardenShop();
                     break;
                 case 2:
-                    seeActiveGardenShops();
+                    GardenShopManager.seeActiveGardenShops();
                     break;
                 case 3:
-                    enterGardenShop();
+                    GardenShopManager.enterGardenShop();
                     break;
                 case 4:
                     System.out.println("Thank you for your hard work, see you next time.");
@@ -30,13 +39,7 @@ public class Helper {
             }
         }
     }
-    private static void createGardenShop(){
-        GardenShopFactory.createGardenShop();
-    }
-    private static void seeActiveGardenShops(){
-
-    }
-    private static void enterGardenShop(){
+    private static void connectToMySQL(){
 
     }
 }

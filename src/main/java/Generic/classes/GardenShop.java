@@ -7,7 +7,7 @@ public class GardenShop {
     private final String _id;
     private final String name;
     private final List<Stock> stockList;
-    private double currentValue = 0;
+    private final double currentValue;
 
     public GardenShop (String _id, String name, List<Stock> stockList, double currentValue){
         this._id = _id;
