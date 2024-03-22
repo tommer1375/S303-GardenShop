@@ -15,6 +15,7 @@ import org.bson.Document;
 import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public enum MongoDAO implements DAO {
@@ -43,19 +44,16 @@ public enum MongoDAO implements DAO {
 
 //    Create methods implemented
     @Override
-    public void createGardenShop(String name, double currentValue) {
+    public void createGardenShop(String name, ArrayList<Document> stock, double currentValue) {
         Document gardenShop = new Document("_id", new ObjectId())
                 .append("name", name)
+                .append("stock", stock)
                 .append("current_value", currentValue);
 
         InsertOneOptions options = new InsertOneOptions()
                 .bypassDocumentValidation(false);
 
         collectionsList.get(Collections.STORES.getPlace()).insertOne(gardenShop, options);
-    }
-    @Override
-    public void createStock() {
-
     }
     @Override
     public void createTicket() {

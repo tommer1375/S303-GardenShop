@@ -5,4 +5,9 @@ public enum Error implements Quality {
     FLOWER,
     DECORATION,
     ERROR;
+
+    @Override
+    public String getName() {
+        return name();
+    }
 }

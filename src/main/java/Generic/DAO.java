@@ -3,13 +3,14 @@ package Generic;
 import Generic.classes.GardenShop;
 import Generic.classes.Products;
 import Generic.classes.Tickets;
+import org.bson.Document;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public interface DAO {
 //    Creation methods
-    void createGardenShop(String name, double currentValue);
-    void createStock();
+    void createGardenShop(String name, ArrayList<Document> stock, double currentValue);
     void createTicket();
 
 //    Read methods

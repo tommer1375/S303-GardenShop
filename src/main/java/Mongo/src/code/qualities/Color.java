@@ -10,4 +10,9 @@ public enum Color implements Quality {
     VIOLET,
     WHITE,
     PINK;
+
+    @Override
+    public String getName() {
+        return name();
+    }
 }

@@ -6,4 +6,9 @@ public enum Height implements Quality {
     SMALL,
     MEDIUM,
     TALL;
+
+    @Override
+    public String getName() {
+        return name();
+    }
 }
