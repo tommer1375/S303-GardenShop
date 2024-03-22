@@ -1,0 +1,13 @@
+package Mongo.src.code.qualities;
+
+public enum Color implements Quality {
+    RED,
+    ORANGE,
+    YELLOW,
+    GREEN,
+    BLUE,
+    INDIGO,
+    VIOLET,
+    WHITE,
+    PINK;
+}

@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface DAO {
 //    Creation methods
-    void createGardenShop();
+    void createGardenShop(String name, double currentValue);
     void createStock();
     void createTicket();
 

@@ -4,18 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GardenShop {
-    private String _id;
-    private String name;
-    private final List<Stock> stockList = new ArrayList<>();
+    private final String _id;
+    private final String name;
+    private final List<Stock> stockList;
     private double currentValue = 0;
 
-    public GardenShop (String _id, String name){
+    public GardenShop (String _id, String name, List<Stock> stockList, double currentValue){
         this._id = _id;
         this.name = name;
+        this.stockList = stockList;
+        this.currentValue = currentValue;
     }
-
-//    Getters
-//    Setters
 
     private String getStock(){
         String textToReturn = this.name + "'s stock:";
@@ -28,6 +27,9 @@ public class GardenShop {
         }
 
         return textToReturn;
+    }
+    private double getCurrentValue(){
+        return currentValue;
     }
     @Override
     public String toString() {

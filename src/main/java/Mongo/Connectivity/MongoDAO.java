@@ -8,14 +8,20 @@ import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.InsertOneOptions;
+import org.bson.Document;
+import org.bson.types.ObjectId;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public enum MongoDAO implements DAO {
     INSTANCE;
     private final MongoClient mongoClient;
     private final MongoDatabase mongoDatabase;
+    private final List<MongoCollection<Document>> collectionsList = new ArrayList<>();
 
     MongoDAO(){
         ConnectionString connectionString = new ConnectionString("mongodb://"
@@ -30,12 +36,22 @@ public enum MongoDAO implements DAO {
                 .build();
         this.mongoClient = MongoClients.create(mongoClientSettings);
         this.mongoDatabase = this.mongoClient.getDatabase("gardenShop");
+        for (Collections collection : Collections.values()){
+            collectionsList.add(this.mongoDatabase.getCollection(collection.name().toLowerCase()));
+        }
     }
 
 //    Create methods implemented
     @Override
-    public void createGardenShop() {
+    public void createGardenShop(String name, double currentValue) {
+        Document gardenShop = new Document("_id", new ObjectId())
+                .append("name", name)
+                .append("current_value", currentValue);
 
+        InsertOneOptions options = new InsertOneOptions()
+                .bypassDocumentValidation(false);
+
+        collectionsList.get(Collections.STORES.getPlace()).insertOne(gardenShop, options);
     }
     @Override
     public void createStock() {

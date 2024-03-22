@@ -1,6 +1,7 @@
 package Mongo.src;
 
 import Generic.Input;
+import Mongo.Factories.GardenShopFactory;
 
 public class Helper {
     protected static void managerStart(){
@@ -30,7 +31,7 @@ public class Helper {
         }
     }
     private static void createGardenShop(){
-
+        GardenShopFactory.createGardenShop();
     }
     private static void seeActiveGardenShops(){
 

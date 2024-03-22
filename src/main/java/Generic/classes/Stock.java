@@ -1,23 +1,29 @@
 package Generic.classes;
 
+import Mongo.src.code.qualities.Quality;
+
 public class Stock {
     private String product_id;
     private final Types type;
     private double price;
     private int quantity;
-    private final String quality;
+    private final Quality quality;
 
 
-    public Stock(Types type, double price, int quantity, String quality){
+    public Stock(Types type, double price, int quantity, Quality quality){
         this.product_id = "";
         this.type = type;
         this.price = price;
         this.quantity = quantity;
         this.quality = quality;
     }
-    public Stock (String product_id, Types type, double price, int quantity, String quality){
+    public Stock (String product_id, Types type, double price, int quantity, Quality quality){
         this(type, price, quantity, quality);
         this.product_id = product_id;
+    }
+
+    public double getPrice() {
+        return price;
     }
 
     public void setQuantity(int quantity) {
