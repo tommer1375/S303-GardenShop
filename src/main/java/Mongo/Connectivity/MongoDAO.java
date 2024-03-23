@@ -1,8 +1,8 @@
 package Mongo.Connectivity;
 
 import Generic.DAO;
-import Generic.classes.Products;
 import Generic.classes.Tickets;
+import Mongo.Managers.Stores.EnteredGardenShop;
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.*;
@@ -15,8 +15,6 @@ import java.util.List;
 
 public enum MongoDAO implements DAO {
     INSTANCE;
-    private final MongoClient mongoClient;
-    private final MongoDatabase mongoDatabase;
     private final List<MongoCollection<Document>> collectionsList = new ArrayList<>();
 
     MongoDAO(){
@@ -30,14 +28,18 @@ public enum MongoDAO implements DAO {
         MongoClientSettings mongoClientSettings = MongoClientSettings.builder()
                 .applyConnectionString(connectionString)
                 .build();
-        this.mongoClient = MongoClients.create(mongoClientSettings);
-        this.mongoDatabase = this.mongoClient.getDatabase("gardenShop");
-        for (Collections collection : Collections.values()){
-            collectionsList.add(this.mongoDatabase.getCollection(collection.name().toLowerCase()));
+        try (MongoClient mongoClient = MongoClients.create(mongoClientSettings)) {
+            MongoDatabase mongoDatabase = mongoClient.getDatabase("gardenShop");
+            for (Collections collection : Collections.values()){
+                collectionsList.add(mongoDatabase.getCollection(collection.name().toLowerCase()));
+            }
+        } catch (Exception e){
+            System.out.println("Issue when connecting MongoClient.");
+            System.exit(0);
         }
     }
 
-//    Create methods implemented
+    //    Create methods implemented
     @Override
     public void createGardenShop(String name, ArrayList<Document> stock, double currentValue) {
         Document gardenShop = new Document("_id", new ObjectId())
@@ -51,6 +53,14 @@ public enum MongoDAO implements DAO {
 
         collectionsList.get(Collections.STORES.getIndex()).insertOne(gardenShop, options);
     }
+
+    @Override
+    public void createStock(Document filter, List<Document> newStockList){
+        collectionsList
+                .get(Collections.STORES.getIndex())
+                .updateOne(filter, new Document("stock", newStockList));
+    }
+
     @Override
     public void createTicket() {
 
@@ -68,11 +78,21 @@ public enum MongoDAO implements DAO {
     }
     @Override
     public Document readGardenShop(String name){
-        return collectionsList.get(Collections.STORES.getIndex()).find(new Document("name", name)).first();
+        return collectionsList
+                .get(Collections.STORES.getIndex())
+                .find(new Document("name", name))
+                .first();
     }
     @Override
-    public List<Products> readShopStock() {
-        return null;
+    public List<Document> readShopStock(Document searchInfo) {
+        List<Document> currentShopStock = new ArrayList<>();
+
+        collectionsList
+                .get(Collections.STORES.getIndex())
+                .find(EnteredGardenShop.INSTANCE.getSearchInfo())
+                .forEach(currentShopStock::add);
+
+        return currentShopStock;
     }
     @Override
     public String readShopValue() {
@@ -97,13 +117,14 @@ public enum MongoDAO implements DAO {
 
     }
 
-//    Delete methods impelemted
+//    Delete methods implemented
     @Override
     public void deleteGardenShop() {
 
     }
     @Override
-    public void deleteStock() {
-
+    public void deleteStock(Document filter, Document update) {
+        collectionsList.get(Collections.STORES.getIndex())
+                .updateOne(filter, update);
     }
 }

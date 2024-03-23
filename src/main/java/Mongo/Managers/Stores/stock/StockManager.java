@@ -2,6 +2,7 @@ package Mongo.Managers.Stores.stock;
 
 import Generic.Utilities.Input;
 import Generic.Utilities.MongoUtilities;
+import Mongo.Managers.Stores.EnteredGardenShop;
 import Mongo.Managers.Stores.stock.qualities.Types;
 import Mongo.Managers.Stores.stock.qualities.Color;
 import Mongo.Managers.Stores.stock.qualities.Decoration;
@@ -25,8 +26,19 @@ public class StockManager {
         return stockList;
     }
     public static void updateStock(){
-
+        switch (Input.readInt("""
+                What would you like to do with the stock?
+                1. Replace stock (eliminate and create a new one, empty or not).
+                2. Add item to stock.
+                3. Modify item from stock.
+                4. Remove item from stock.
+                """)){
+            case 1 -> EnteredGardenShop.INSTANCE.replaceStock();
+            case 2 -> EnteredGardenShop.INSTANCE.updateStock();
+            default -> System.out.println("Invalid choice.");
+        }
     }
+
     private static ArrayList<Document> fillShopStock(){
         ArrayList<Document> documentArrayList = new ArrayList<>();
         int quantity = Input.readInt("How many items would you like to add to the stock?");
