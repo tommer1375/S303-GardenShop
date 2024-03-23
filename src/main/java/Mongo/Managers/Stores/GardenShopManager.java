@@ -43,14 +43,15 @@ public class GardenShopManager {
         }
 
         while(true){
-            switch (Input.readInt(EnteredGardenShop.INSTANCE.toString()
+            switch (Input.readInt(EnteredGardenShop.INSTANCE
                     + """
                         0. Exit store.
                         1. See current Stock.
                         2. Update Stock.
                         """)){
                 case 0 -> {return;}
-                case 1 -> System.out.println(EnteredGardenShop.INSTANCE.readStock());
+                case 1 -> StockManager.readStock();
+                case 2 -> StockManager.updateStock();
 
             }
         }

@@ -7,6 +7,8 @@ import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.*;
 import com.mongodb.client.model.InsertOneOptions;
+import com.mongodb.client.result.DeleteResult;
+import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
@@ -60,10 +62,10 @@ public enum MongoDAO implements DAO {
                 .get(Collections.STORES.getIndex())
                 .updateOne(filter, new Document("stock", newStockList));
     }
-    public void createSingleStock(Document stock){
+    public void createSingleStock(Document filter, Document stock){
         if(collectionsList
                 .get(Collections.STORES.getIndex())
-                .countDocuments(stock) > 0){
+                .countDocuments(filter) > 0){
             System.out.println("At least one matching product in stock, to change one of it's qualities, use the \"Modify item from stock\" option.");
         } else {
             collectionsList
@@ -125,18 +127,46 @@ public enum MongoDAO implements DAO {
 
     }
     @Override
-    public void updateStock() {
-
+    public int updateStock(Document filter, Document update) {
+        if(collectionsList.get(Collections.STORES.getIndex())
+                   .countDocuments(filter) == 0){
+            return 0;
+        } else {
+            UpdateResult result = collectionsList.get(Collections.STORES.getIndex())
+                    .updateOne(filter, update);
+            if (result.wasAcknowledged()) {
+                return 1;
+            } else{
+                return 2;
+            }
+        }
     }
 
-//    Delete methods implemented
+    //    Delete methods implemented
     @Override
     public void deleteGardenShop() {
 
     }
+
     @Override
-    public void deleteStock(Document filter, Document update) {
+    public int deleteSingleStock(Document filter) {
+        if(collectionsList.get(Collections.STORES.getIndex())
+                .countDocuments(filter) == 0){
+            return 0;
+        } else {
+            DeleteResult result = collectionsList.get(Collections.STORES.getIndex())
+                    .deleteOne(filter);
+            if (result.wasAcknowledged()) {
+                return 1;
+            } else{
+                return 2;
+            }
+        }
+    }
+
+    @Override
+    public void deleteFullStock(Document filter) {
         collectionsList.get(Collections.STORES.getIndex())
-                .updateOne(filter, update);
+                .updateOne(filter, new Document("$unset", new Document("stock", "")));
     }
 }

@@ -22,10 +22,10 @@ public interface DAO {
 
 //    Update methods
     void updateGardenShop();
-    void updateStock();
+    int updateStock(Document filter, Document update);
 
 //    Delete methods
     void deleteGardenShop();
-
-    void deleteStock(Document filter, Document update);
+    int deleteSingleStock(Document filter);
+    void deleteFullStock(Document filter);
 }

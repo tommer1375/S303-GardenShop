@@ -22,30 +22,6 @@ public class StockManager {
 
         return stockList;
     }
-    public static void updateStock(){
-        switch (Input.readInt("""
-                What would you like to do with the stock?
-                1. Replace stock (eliminate and create a new one, empty or not).
-                2. Add item to stock.
-                3. Modify item from stock.
-                4. Remove item from stock.
-                """)){
-            case 1 -> EnteredGardenShop.INSTANCE.replaceStock();
-            case 2 -> EnteredGardenShop.INSTANCE.addToStock();
-            case 3 -> EnteredGardenShop.INSTANCE.modifyItemFromStock();
-            default -> System.out.println("Invalid choice.");
-        }
-    }
-    private static ArrayList<Document> fillShopStock(){
-        ArrayList<Document> documentArrayList = new ArrayList<>();
-        int quantity = Input.readInt("How many items would you like to add to the stock?");
-
-        while (quantity > 0){
-            documentArrayList.add(createStockDocument());
-            quantity--;
-        }
-        return documentArrayList;
-    }
     public static Document createStockDocument(){
         Types type = Types.ERROR;
 
@@ -84,6 +60,32 @@ public class StockManager {
                 .append("quantity", quantity)
                 .append(quality.getClass().getSimpleName(), quality.getName());
     }
+    public static void readStock(){
+        switch (Input.readInt("""
+                How would you like to see the stock:
+                1. In full.
+                2. In quantity.
+                """)){
+            case 1 -> System.out.println(EnteredGardenShop.INSTANCE.readStockInFull());
+            case 2 -> System.out.println(EnteredGardenShop.INSTANCE.readStockInQuantities());
+            default -> System.out.println("Invalid choice.");
+        }
+    }
+    public static void updateStock(){
+        switch (Input.readInt("""
+                What would you like to do with the stock?
+                1. Replace stock (eliminate and create a new one, empty or not).
+                2. Add item to stock.
+                3. Modify item from stock.
+                4. Remove item from stock.
+                """)){
+            case 1 -> EnteredGardenShop.INSTANCE.updateFullStock();
+            case 2 -> EnteredGardenShop.INSTANCE.createToStock();
+            case 3 -> EnteredGardenShop.INSTANCE.updateItemFromStock();
+            case 4 -> EnteredGardenShop.INSTANCE.deleteItemFromStock();
+            default -> System.out.println("Invalid choice.");
+        }
+    }
     public static Document updateStockDocument(Document stock){
         boolean isModifyQuantity = Input.readIfNo("Would you like to modify the quantity?");
         if (isModifyQuantity) {
@@ -103,5 +105,16 @@ public class StockManager {
         }
 
         return stock;
+    }
+
+    private static ArrayList<Document> fillShopStock(){
+        ArrayList<Document> documentArrayList = new ArrayList<>();
+        int quantity = Input.readInt("How many items would you like to add to the stock?");
+
+        while (quantity > 0){
+            documentArrayList.add(createStockDocument());
+            quantity--;
+        }
+        return documentArrayList;
     }
 }

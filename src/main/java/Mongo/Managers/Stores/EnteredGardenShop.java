@@ -36,7 +36,24 @@ public enum EnteredGardenShop {
         MongoUtilities.enterGardenShop(this.name);
     }
 
-    public String readStock(){
+
+//    CRUD Stock operations, to make use of the search info document variable.
+    public void createToStock(){
+        Document stock = StockManager.createStockDocument();
+
+        if(stock == null){
+            return;
+        }
+
+        Document filter = getStockFilter(stock);
+
+        stockList.add(stock);
+        MongoDAO.INSTANCE.createSingleStock(filter, stock);
+        System.out.println("Stock added: " + "\n" + MongoUtilities.printSingleStock(Objects.requireNonNull(stock)));
+    }
+
+
+    public String readStockInFull(){
         return this.stockList.stream()
                 .map(document ->
                         "- [ Product_id" + document.getObjectId("product_id") + ", "
@@ -45,8 +62,18 @@ public enum EnteredGardenShop {
                         + "Quantity: " + document.getInteger("quantity.") + " ]")
                 .collect(Collectors.joining("\n", "Current Stock:\\n", ""));
     }
-    public void replaceStock(){
-        MongoDAO.INSTANCE.deleteStock(this.searchInfo, new Document("$unset", new Document("stock", "")));
+    public String readStockInQuantities(){
+        return stockList.stream()
+                .collect(Collectors.groupingBy(
+                        doc -> doc.getString("type"),
+                        Collectors.counting()))
+                .entrySet().stream()
+                .map(entry -> "- " + entry.getKey() + ": " + entry.getValue())
+                .collect(Collectors.joining("\n", "Current Stock:\n", "")
+        );
+    }
+    public void updateFullStock(){
+        MongoDAO.INSTANCE.deleteFullStock(this.searchInfo);
 
         List<Document> newStockList = StockManager.createShopStock();
 
@@ -54,14 +81,7 @@ public enum EnteredGardenShop {
         MongoDAO.INSTANCE.createStock(this.searchInfo, newStockList);
         System.out.println("Stock replaced.");
     }
-    public void addToStock(){
-        Document stock = StockManager.createStockDocument();
-
-        stockList.add(stock);
-        MongoDAO.INSTANCE.createSingleStock(stock);
-        System.out.println("Stock added: " + "\n" + MongoUtilities.printSingleStock(Objects.requireNonNull(stock)));
-    }
-    public void modifyItemFromStock(){
+    public void updateItemFromStock(){
         ObjectId product_id = new ObjectId(Input.readString("Introduce the object's product_id."));
         boolean isFound;
 
@@ -70,21 +90,55 @@ public enum EnteredGardenShop {
             isFound = stock.getObjectId("product_id").equals(product_id);
 
             if(isFound){
-                Document newStock = StockManager.updateStockDocument(stock);
+                Document updatedStock = StockManager.updateStockDocument(stock);
 
-                stockList.remove(i);
-                stockList.add(i, newStock);
-                System.out.println(MongoUtilities.printSingleStock(stock)
-                        + "\nChanged to:"
-                        + MongoUtilities.printSingleStock(newStock));
+                int result = MongoDAO.INSTANCE.updateStock(getStockFilter(stock), updatedStock);
+
+                switch (result){
+                    case 0 -> System.out.println("No matching product in stock, make sure the object_id is properly copied.");
+                    case 1 -> {
+                        stockList.set(i, updatedStock);
+                        System.out.println(MongoUtilities.printSingleStock(stock)
+                                + "\nChanged to:"
+                                + MongoUtilities.printSingleStock(updatedStock));
+                    }
+                    case 2 -> System.out.println("Failed to update matching product in stock, check for connection errors.");
+                }
                 return;
             }
         }
-
-        System.out.println("An object with that product_id isn't registered.");
     }
+    public void deleteItemFromStock(){
+        ObjectId product_id = new ObjectId(Input.readString("Introduce the object's product_id."));
+        boolean isFound;
+
+        for (int i = 0; i < stockList.size(); i++) {
+            Document stock = stockList.get(i);
+            isFound = stock.getObjectId("product_id").equals(product_id);
+
+            if (isFound) {
+                int result = MongoDAO.INSTANCE.deleteSingleStock(getStockFilter(stock));
+
+                switch (result){
+                    case 0 -> System.out.println("No matching product in stock, make sure the object_id is properly copied.");
+                    case 1 -> {
+                        stockList.remove(stock);
+                        System.out.println("Stock item deleted: " + MongoUtilities.printSingleStock(stock));
+                    }
+                    case 2 -> System.out.println("Failed to update matching product in stock, check for connection errors.");
+                }
+                return;
+            }
+        }
+    }
+
+
     public Document getSearchInfo(){
         return this.searchInfo;
+    }
+    private Document getStockFilter(Document stock) {
+        return this.searchInfo
+                .append("stock.product_id", stock.getObjectId("product_id"));
     }
 
     @Override
