@@ -1,5 +1,6 @@
 package Mongo.Managers.Stores;
 
+import Generic.Utilities.Input;
 import Generic.Utilities.MongoUtilities;
 import Mongo.Connectivity.MongoDAO;
 import Mongo.Managers.Stores.stock.StockManager;
@@ -7,6 +8,7 @@ import org.bson.Document;
 import org.bson.types.ObjectId;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public enum EnteredGardenShop {
@@ -37,7 +39,8 @@ public enum EnteredGardenShop {
     public String readStock(){
         return this.stockList.stream()
                 .map(document ->
-                        "- [ Type: " + document.getString("type") + ", "
+                        "- [ Product_id" + document.getObjectId("product_id") + ", "
+                        + "Type: " + document.getString("type") + ", "
                         + "Price: " + document.getDouble("price") + "€, "
                         + "Quantity: " + document.getInteger("quantity.") + " ]")
                 .collect(Collectors.joining("\n", "Current Stock:\\n", ""));
@@ -49,12 +52,36 @@ public enum EnteredGardenShop {
 
         this.stockList = newStockList;
         MongoDAO.INSTANCE.createStock(this.searchInfo, newStockList);
+        System.out.println("Stock replaced.");
     }
-    public void updateStock(){
+    public void addToStock(){
+        Document stock = StockManager.createStockDocument();
 
+        stockList.add(stock);
+        MongoDAO.INSTANCE.createSingleStock(stock);
+        System.out.println("Stock added: " + "\n" + MongoUtilities.printSingleStock(Objects.requireNonNull(stock)));
     }
-    public void addStock(){
+    public void modifyItemFromStock(){
+        ObjectId product_id = new ObjectId(Input.readString("Introduce the object's product_id."));
+        boolean isFound;
 
+        for (int i = 0; i < stockList.size(); i++) {
+            Document stock = stockList.get(i);
+            isFound = stock.getObjectId("product_id").equals(product_id);
+
+            if(isFound){
+                Document newStock = StockManager.updateStockDocument(stock);
+
+                stockList.remove(i);
+                stockList.add(i, newStock);
+                System.out.println(MongoUtilities.printSingleStock(stock)
+                        + "\nChanged to:"
+                        + MongoUtilities.printSingleStock(newStock));
+                return;
+            }
+        }
+
+        System.out.println("An object with that product_id isn't registered.");
     }
     public Document getSearchInfo(){
         return this.searchInfo;

@@ -60,7 +60,19 @@ public enum MongoDAO implements DAO {
                 .get(Collections.STORES.getIndex())
                 .updateOne(filter, new Document("stock", newStockList));
     }
-
+    public void createSingleStock(Document stock){
+        if(collectionsList
+                .get(Collections.STORES.getIndex())
+                .countDocuments(stock) > 0){
+            System.out.println("At least one matching product in stock, to change one of it's qualities, use the \"Modify item from stock\" option.");
+        } else {
+            collectionsList
+                    .get(Collections.STORES.getIndex())
+                    .updateMany(EnteredGardenShop.INSTANCE.getSearchInfo()
+                            , new Document("$push"
+                            , new Document("stock", stock)));
+        }
+    }
     @Override
     public void createTicket() {
 

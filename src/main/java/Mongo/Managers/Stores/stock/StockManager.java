@@ -4,10 +4,7 @@ import Generic.Utilities.Input;
 import Generic.Utilities.MongoUtilities;
 import Mongo.Managers.Stores.EnteredGardenShop;
 import Mongo.Managers.Stores.stock.qualities.Types;
-import Mongo.Managers.Stores.stock.qualities.Color;
-import Mongo.Managers.Stores.stock.qualities.Decoration;
 import Mongo.Managers.Stores.stock.qualities.Error;
-import Mongo.Managers.Stores.stock.qualities.Height;
 import Mongo.Managers.Stores.stock.qualities.Quality;
 import org.bson.Document;
 
@@ -34,11 +31,11 @@ public class StockManager {
                 4. Remove item from stock.
                 """)){
             case 1 -> EnteredGardenShop.INSTANCE.replaceStock();
-            case 2 -> EnteredGardenShop.INSTANCE.updateStock();
+            case 2 -> EnteredGardenShop.INSTANCE.addToStock();
+            case 3 -> EnteredGardenShop.INSTANCE.modifyItemFromStock();
             default -> System.out.println("Invalid choice.");
         }
     }
-
     private static ArrayList<Document> fillShopStock(){
         ArrayList<Document> documentArrayList = new ArrayList<>();
         int quantity = Input.readInt("How many items would you like to add to the stock?");
@@ -49,7 +46,7 @@ public class StockManager {
         }
         return documentArrayList;
     }
-    private static Document createStockDocument(){
+    public static Document createStockDocument(){
         Types type = Types.ERROR;
 
         while (type == Types.ERROR){
@@ -86,5 +83,25 @@ public class StockManager {
                 .append("price", price)
                 .append("quantity", quantity)
                 .append(quality.getClass().getSimpleName(), quality.getName());
+    }
+    public static Document updateStockDocument(Document stock){
+        boolean isModifyQuantity = Input.readIfNo("Would you like to modify the quantity?");
+        if (isModifyQuantity) {
+            int newQuantity = Input.readInt("Introduce new quantity.");
+            stock.put("quantity", newQuantity);
+        }
+
+        boolean isModifyPrice = Input.readIfNo("Would you like to modify the price?");
+        if (isModifyPrice){
+            double newPrice = Input.readDouble("Introduce new price");
+            stock.put("price", newPrice);
+        }
+
+        if(!isModifyPrice && !isModifyQuantity){
+            System.out.println("No modifiable quality has been modified." +
+                    "\nIf any of the other parts of the document are to be modified, eliminate this one, if need be, and create a new one.");
+        }
+
+        return stock;
     }
 }

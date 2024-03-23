@@ -37,6 +37,13 @@ public class MongoUtilities {
 
         return true;
     }
+    public static String printSingleStock(Document stock){
+        return String.join("\n\t-"
+                , "Product_id: " + stock.getObjectId("product_id")
+                , "Type: " + stock.getString("type")
+                , "Price: " + stock.getDouble("price")
+                , "Quantity: " + stock.getInteger("quantity."));
+    }
     public static Quality chooseHeight(){
         return switch (Input.readInt("""
                 Choose the height for your tree:
