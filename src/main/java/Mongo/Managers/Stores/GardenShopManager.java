@@ -4,6 +4,7 @@ import Generic.Utilities.Input;
 import Mongo.Connectivity.MongoDAO;
 import Mongo.Managers.Stores.stock.StockManager;
 import Generic.Utilities.MongoUtilities;
+import Mongo.Managers.Tickets.TicketManager;
 import org.bson.Document;
 
 import java.util.ArrayList;
@@ -15,11 +16,11 @@ public class GardenShopManager {
 
         ArrayList<Document> stock = StockManager.createShopStock();
 
-        double currentValue = MongoUtilities.getCurrentValue(stock);
+        double currentStockValue = MongoUtilities.getCurrentStockValue(stock);
 
-        MongoDAO.INSTANCE.createGardenShop(name, stock, currentValue);
+        MongoDAO.INSTANCE.createGardenShop(name, stock, currentStockValue);
     }
-    public static void seeActiveGardenShops(){
+    public static void readActiveGardenShops(){
         List<Document> activeGardenShops = MongoDAO.INSTANCE.readGardenShops();
         String activeGardenShopPrintable = "Current Active Garden Shops:";
 
@@ -48,11 +49,15 @@ public class GardenShopManager {
                         0. Exit store.
                         1. See current Stock.
                         2. Update Stock.
+                        3. See Past Tickets.
+                        4. Create Ticket.
                         """)){
                 case 0 -> {return;}
                 case 1 -> StockManager.readStock();
                 case 2 -> StockManager.updateStock();
-
+                case 3 -> TicketManager.readPastTickets();
+                case 4 -> TicketManager.createTicket();
+                default -> System.out.println("Invalid choice.");
             }
         }
     }

@@ -14,14 +14,14 @@ public class MongoUtilities {
                 + "\n\tName: " + document.getString("name")
                 + "\n\tCurrent Value: " + document.getDouble("current_value") + "€";
     }
-    public static double getCurrentValue(ArrayList<Document> stock){
-        double currentValue = 0;
+    public static double getCurrentStockValue(ArrayList<Document> stock){
+        double currentStockValue = 0;
 
         for (Document document : stock){
-            currentValue += document.getDouble("price");
+            currentStockValue += document.getDouble("price");
         }
 
-        return currentValue;
+        return currentStockValue;
     }
     public static boolean enterGardenShop(String name){
         Document currentShop = MongoDAO.INSTANCE.readGardenShop(name);
@@ -31,9 +31,10 @@ public class MongoUtilities {
         }
 
         String _id = currentShop.getString("_id");
-        double currentValue = currentShop.getDouble("current_value");
+        double currentStockValue = currentShop.getDouble("current_stock_value");
+        double currentSalesValue = currentShop.getDouble("current_sales_value");
 
-        EnteredGardenShop.INSTANCE.enter(_id, name, currentValue);
+        EnteredGardenShop.INSTANCE.enter(_id, name, currentStockValue, currentSalesValue);
 
         return true;
     }

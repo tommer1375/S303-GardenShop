@@ -26,7 +26,7 @@ public class Helper {
                     GardenShopManager.createGardenShop();
                     break;
                 case 2:
-                    GardenShopManager.seeActiveGardenShops();
+                    GardenShopManager.readActiveGardenShops();
                     break;
                 case 3:
                     GardenShopManager.enterGardenShop();

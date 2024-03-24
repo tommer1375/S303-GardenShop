@@ -106,7 +106,6 @@ public class StockManager {
 
         return stock;
     }
-
     private static ArrayList<Document> fillShopStock(){
         ArrayList<Document> documentArrayList = new ArrayList<>();
         int quantity = Input.readInt("How many items would you like to add to the stock?");

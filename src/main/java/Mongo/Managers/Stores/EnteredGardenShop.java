@@ -16,24 +16,21 @@ public enum EnteredGardenShop {
 
     private String _id;
     private String name;
-    private double currentValue;
+    private double currentStockValue;
+    private double currentSalesValue;
     private List<Document> stockList;
-    private Document searchInfo;
 
     EnteredGardenShop() {
         _id = "";
         name = "";
-        currentValue = 0;
+        currentStockValue = 0;
     }
-    public void enter(String _id, String name, double currentValue){
+    public void enter(String _id, String name, double currentValue, double currentOldSalesValue){
         this._id = _id;
         this.name= name;
-        this.searchInfo = new Document("_id", new ObjectId(_id));
-        this.stockList = MongoDAO.INSTANCE.readShopStock(this.searchInfo);
-        this.currentValue = currentValue;
-    }
-    public void update(){
-        MongoUtilities.enterGardenShop(this.name);
+        this.stockList = MongoDAO.INSTANCE.readShopStock(new Document("_id", new ObjectId(_id)));
+        this.currentStockValue = currentValue;
+        this.currentSalesValue = currentOldSalesValue;
     }
 
 
@@ -60,7 +57,7 @@ public enum EnteredGardenShop {
                         + "Type: " + document.getString("type") + ", "
                         + "Price: " + document.getDouble("price") + "€, "
                         + "Quantity: " + document.getInteger("quantity.") + " ]")
-                .collect(Collectors.joining("\n", "Current Stock:\\n", ""));
+                .collect(Collectors.joining("\n", "Current Stock: ", ""));
     }
     public String readStockInQuantities(){
         return stockList.stream()
@@ -69,16 +66,17 @@ public enum EnteredGardenShop {
                         Collectors.counting()))
                 .entrySet().stream()
                 .map(entry -> "- " + entry.getKey() + ": " + entry.getValue())
-                .collect(Collectors.joining("\n", "Current Stock:\n", "")
+                .collect(Collectors.joining("\n", "Current Stock:", "")
         );
     }
+
     public void updateFullStock(){
-        MongoDAO.INSTANCE.deleteFullStock(this.searchInfo);
+        MongoDAO.INSTANCE.deleteFullStock(getSearchInfo());
 
         List<Document> newStockList = StockManager.createShopStock();
 
         this.stockList = newStockList;
-        MongoDAO.INSTANCE.createStock(this.searchInfo, newStockList);
+        MongoDAO.INSTANCE.createStock(getSearchInfo(), newStockList);
         System.out.println("Stock replaced.");
     }
     public void updateItemFromStock(){
@@ -108,6 +106,7 @@ public enum EnteredGardenShop {
             }
         }
     }
+
     public void deleteItemFromStock(){
         ObjectId product_id = new ObjectId(Input.readString("Introduce the object's product_id."));
         boolean isFound;
@@ -134,17 +133,21 @@ public enum EnteredGardenShop {
 
 
     public Document getSearchInfo(){
-        return this.searchInfo;
+        return new Document("_id", new ObjectId(_id));
     }
     private Document getStockFilter(Document stock) {
-        return this.searchInfo
+        return getSearchInfo()
                 .append("stock.product_id", stock.getObjectId("product_id"));
+    }
+    public Document getTicketFilter(){
+        return new Document("store_id", new ObjectId(_id));
     }
 
     @Override
     public String toString() {
         return "Store_id: " + _id
                 + "\n\tName: " + name
-                + "\n\tCurrent Value: " + currentValue;
+                + "\n\tCurrent Stock Value: " + currentStockValue
+                + "\n\tCurrent Sales Value: " + currentSalesValue;
     }
 }

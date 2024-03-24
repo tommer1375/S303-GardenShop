@@ -1,6 +1,5 @@
 package Generic;
 
-import Generic.classes.Tickets;
 import org.bson.Document;
 
 import java.util.ArrayList;
@@ -16,12 +15,9 @@ public interface DAO {
     List<Document> readGardenShops();
     Document readGardenShop(String name);
     List<Document> readShopStock(Document document);
-    String readShopValue();
-    String readSalesValue();
-    List<Tickets> readOldPurchases();
+    List<Document> readPastTickets();
 
 //    Update methods
-    void updateGardenShop();
     int updateStock(Document filter, Document update);
 
 //    Delete methods

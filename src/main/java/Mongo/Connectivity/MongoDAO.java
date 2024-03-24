@@ -1,12 +1,12 @@
 package Mongo.Connectivity;
 
 import Generic.DAO;
-import Generic.classes.Tickets;
 import Mongo.Managers.Stores.EnteredGardenShop;
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.*;
 import com.mongodb.client.model.InsertOneOptions;
+import com.mongodb.client.model.Projections;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
@@ -43,11 +43,12 @@ public enum MongoDAO implements DAO {
 
     //    Create methods implemented
     @Override
-    public void createGardenShop(String name, ArrayList<Document> stock, double currentValue) {
+    public void createGardenShop(String name, ArrayList<Document> stock, double currentStockValue) {
         Document gardenShop = new Document("_id", new ObjectId())
                 .append("name", name)
                 .append("stock", stock)
-                .append("current_value", currentValue)
+                .append("current_stock_value", currentStockValue)
+                .append("current_sales_value", 0.0)
                 .append("status", "Active");
 
         InsertOneOptions options = new InsertOneOptions()
@@ -55,7 +56,6 @@ public enum MongoDAO implements DAO {
 
         collectionsList.get(Collections.STORES.getIndex()).insertOne(gardenShop, options);
     }
-
     @Override
     public void createStock(Document filter, List<Document> newStockList){
         collectionsList
@@ -83,12 +83,9 @@ public enum MongoDAO implements DAO {
 //    Read methods implemented
     @Override
     public List<Document> readGardenShops() {
-        List<Document> gardenShopsList = new ArrayList<>();
-        FindIterable<Document> stores = collectionsList.get(Collections.STORES.getIndex()).find();
-
-        stores.forEach(gardenShopsList::add);
-
-        return gardenShopsList;
+        return collectionsList.get(Collections.STORES.getIndex())
+                .find()
+                .into(new ArrayList<>());
     }
     @Override
     public Document readGardenShop(String name){
@@ -99,33 +96,22 @@ public enum MongoDAO implements DAO {
     }
     @Override
     public List<Document> readShopStock(Document searchInfo) {
-        List<Document> currentShopStock = new ArrayList<>();
-
-        collectionsList
+        return collectionsList
                 .get(Collections.STORES.getIndex())
                 .find(EnteredGardenShop.INSTANCE.getSearchInfo())
-                .forEach(currentShopStock::add);
-
-        return currentShopStock;
+                .projection(Projections.include("stock"))
+                .into(new ArrayList<>());
     }
     @Override
-    public String readShopValue() {
-        return null;
-    }
-    @Override
-    public String readSalesValue() {
-        return null;
-    }
-    @Override
-    public List<Tickets> readOldPurchases() {
-        return null;
+    public List<Document> readPastTickets() {
+        return collectionsList
+                .get(Collections.TICKETS.getIndex())
+                .find()
+                .filter(EnteredGardenShop.INSTANCE.getTicketFilter())
+                .into(new ArrayList<>());
     }
 
 //    Update methods implemented
-    @Override
-    public void updateGardenShop() {
-
-    }
     @Override
     public int updateStock(Document filter, Document update) {
         if(collectionsList.get(Collections.STORES.getIndex())
