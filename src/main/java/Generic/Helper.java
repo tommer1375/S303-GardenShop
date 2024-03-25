@@ -1,4 +1,4 @@
-package Mongo.src;
+package Generic;
 
 import Generic.ConnectType;
 import Generic.Utilities.Input;

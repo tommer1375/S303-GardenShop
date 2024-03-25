@@ -20,24 +20,14 @@ public enum MongoDAO implements DAO {
     private final List<MongoCollection<Document>> collectionsList = new ArrayList<>();
 
     MongoDAO(){
-        ConnectionString connectionString = new ConnectionString("mongodb://"
-                + MongoConfig.USER + ":"
-                + MongoConfig.PASSWORD + "@"
-                + MongoConfig.HOST + ":"
-                + MongoConfig.PORT + "/?authMechanism="
-                + MongoConfig.AUTHMECHANISM + "&authSource="
-                + MongoConfig.DATABASE);
+        ConnectionString connectionString = new ConnectionString(MongoConfig.getConnectionString());
         MongoClientSettings mongoClientSettings = MongoClientSettings.builder()
                 .applyConnectionString(connectionString)
                 .build();
-        try (MongoClient mongoClient = MongoClients.create(mongoClientSettings)) {
-            MongoDatabase mongoDatabase = mongoClient.getDatabase("gardenShop");
-            for (Collections collection : Collections.values()){
-                collectionsList.add(mongoDatabase.getCollection(collection.name().toLowerCase()));
-            }
-        } catch (Exception e){
-            System.out.println("Issue when connecting MongoClient.");
-            System.exit(0);
+        MongoClient mongoClient = MongoClients.create(mongoClientSettings);
+        MongoDatabase mongoDatabase = mongoClient.getDatabase("gardenShop");
+        for (Collections collection : Collections.values()){
+            collectionsList.add(mongoDatabase.getCollection(collection.name().toLowerCase()));
         }
     }
 
