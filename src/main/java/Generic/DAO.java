@@ -1,6 +1,7 @@
 package Generic;
 
 import org.bson.Document;
+import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,9 +10,10 @@ public interface DAO {
 //    Creation methods
     void createGardenShop(String name, ArrayList<Document> stock, double currentValue);
     void createStock(Document filter, List<Document> newStockList);
-    void createTicket();
 
-//    Read methods
+    void createTicket(ObjectId _id, ObjectId store_id, List<Document> products, double total);
+
+    //    Read methods
     List<Document> readGardenShops();
     Document readGardenShop(String name);
     List<Document> readShopStock(Document document);

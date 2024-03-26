@@ -1,3 +1,4 @@
+
 plugins {
     id 'java'
 }
@@ -10,10 +11,17 @@ repositories {
 }
 
 dependencies {
+//    JUnit Implementation
     testImplementation platform('org.junit:junit-bom:5.9.1')
     testImplementation 'org.junit.jupiter:junit-jupiter'
+//    MongoDB Driver
     implementation 'org.mongodb:mongodb-driver-sync:5.0.0'
+//    MySQL Driver
     implementation 'mysql:mysql-connector-java:8.0.33'
+//    SLF4J, latest version as of 25/03/2024
+    implementation 'org.slf4j:slf4j-api:2.0.12'
+//    Logback, latest version as of 25/03/2024
+    implementation 'ch.qos.logback:logback-classic:1.5.3'
 }
 
 test {

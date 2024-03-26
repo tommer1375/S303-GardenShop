@@ -1,0 +1,4 @@
+01:32:14.568 [main] INFO  Mongo.Connectivity.MongoDAO - Connection made without any errors for connection string: mongodb://it-academy-access:fneH5P95Yqmfnm@localhost:27017/?authSource=gardenShop01:37:13.331 [main] INFO  Mongo.Connectivity.MongoDAO - Connection made without any errors for connection string: mongodb://it-academy-access:fneH5P95Yqmfnm@localhost:27017/?authSource=gardenShop
+
+01:38:30.812 [main] INFO  Mongo.Connectivity.MongoDAO - Connection made without any errors for connection string: mongodb://it-academy-access:fneH5P95Yqmfnm@localhost:27017/?authSource=gardenShop
+

@@ -3,7 +3,7 @@ package Mongo.Managers.Stores;
 import Generic.Utilities.Input;
 import Mongo.Connectivity.MongoDAO;
 import Mongo.Managers.Stores.stock.StockManager;
-import Generic.Utilities.MongoUtilities;
+import Mongo.Managers.MongoUtilities;
 import Mongo.Managers.Tickets.TicketManager;
 import org.bson.Document;
 

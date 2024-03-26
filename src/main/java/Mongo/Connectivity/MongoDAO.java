@@ -1,6 +1,7 @@
 package Mongo.Connectivity;
 
 import Generic.DAO;
+import Mongo.Managers.MongoUtilities;
 import Mongo.Managers.Stores.EnteredGardenShop;
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
@@ -11,12 +12,16 @@ import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
 import org.bson.types.ObjectId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public enum MongoDAO implements DAO {
     INSTANCE;
+
+    private final Logger logger = LoggerFactory.getLogger(MongoDAO.class);
     private final List<MongoCollection<Document>> collectionsList = new ArrayList<>();
 
     MongoDAO(){
@@ -29,6 +34,8 @@ public enum MongoDAO implements DAO {
         for (Collections collection : Collections.values()){
             collectionsList.add(mongoDatabase.getCollection(collection.name().toLowerCase()));
         }
+        logger.atInfo().log("Connection made without any errors for connection string: "
+                    + MongoConfig.getConnectionString());
     }
 
     //    Create methods implemented
@@ -45,6 +52,8 @@ public enum MongoDAO implements DAO {
                 .bypassDocumentValidation(false);
 
         collectionsList.get(Collections.STORES.getIndex()).insertOne(gardenShop, options);
+        logger.atInfo().log("Garden Shop Properly Created:\n"
+                + MongoUtilities.extractDocumentDescription(gardenShop));
     }
     @Override
     public void createStock(Document filter, List<Document> newStockList){
@@ -66,8 +75,17 @@ public enum MongoDAO implements DAO {
         }
     }
     @Override
-    public void createTicket() {
+    public void createTicket(ObjectId _id, ObjectId store_id, List<Document> products, double total) {
+        Document ticket = new Document()
+                .append("_id", _id)
+                .append("store_id", store_id)
+                .append("products", new ArrayList<>(products))
+                .append("total", total);
 
+        InsertOneOptions options = new InsertOneOptions()
+                .bypassDocumentValidation(false);
+
+        collectionsList.get(Collections.TICKETS.getIndex()).insertOne(ticket, options);
     }
 
 //    Read methods implemented

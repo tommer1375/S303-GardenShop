@@ -1,5 +1,6 @@
-package Generic.Utilities;
+package Mongo.Managers;
 
+import Generic.Utilities.Input;
 import Mongo.Connectivity.MongoDAO;
 import Mongo.Managers.Stores.EnteredGardenShop;
 import Mongo.Managers.Stores.stock.qualities.*;
@@ -7,8 +8,38 @@ import Mongo.Managers.Stores.stock.qualities.Error;
 import org.bson.Document;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class MongoUtilities {
+    public static String extractDocumentDescription(Document document) {
+        StringBuilder description = new StringBuilder();
+        extractFields(document, "", description);
+        return description.toString();
+    }
+    private static void extractFields(Document document, String indent, StringBuilder description) {
+        for (Map.Entry<String, Object> entry : document.entrySet()) {
+            String fieldName = entry.getKey();
+            Object value = entry.getValue();
+
+            if (value instanceof Document) {
+                description.append(indent).append(fieldName).append(":\n");
+                extractFields((Document) value, indent + "\t", description);
+            } else if (value instanceof List) {
+                description.append(indent).append(fieldName).append(": [\n");
+                for (Object item : (List<?>) value) {
+                    if (item instanceof Document) {
+                        extractFields((Document) item, indent + "\t", description);
+                    } else {
+                        description.append(indent).append("\t").append(item).append("\n");
+                    }
+                }
+                description.append(indent).append("]\n");
+            } else {
+                description.append(indent).append(fieldName).append(": ").append(value).append("\n");
+            }
+        }
+    }
     public static String extractGardenShopDescription(Document document){
         return "\n- Store_id: " + document.getObjectId("_id")
                 + "\n\tName: " + document.getString("name")
@@ -30,7 +61,7 @@ public class MongoUtilities {
             return false;
         }
 
-        String _id = currentShop.getString("_id");
+        String _id = currentShop.getObjectId("_id").toString();
         double currentStockValue = currentShop.getDouble("current_stock_value");
         double currentSalesValue = currentShop.getDouble("current_sales_value");
 

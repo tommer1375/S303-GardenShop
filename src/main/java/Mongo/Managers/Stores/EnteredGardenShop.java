@@ -1,7 +1,7 @@
 package Mongo.Managers.Stores;
 
 import Generic.Utilities.Input;
-import Generic.Utilities.MongoUtilities;
+import Mongo.Managers.MongoUtilities;
 import Mongo.Connectivity.MongoDAO;
 import Mongo.Managers.Stores.stock.StockManager;
 import org.bson.Document;
@@ -33,7 +33,6 @@ public enum EnteredGardenShop {
         this.currentSalesValue = currentOldSalesValue;
     }
 
-
 //    CRUD Stock operations, to make use of the search info document variable.
     public void createToStock(){
         Document stock = StockManager.createStockDocument();
@@ -48,7 +47,6 @@ public enum EnteredGardenShop {
         MongoDAO.INSTANCE.createSingleStock(filter, stock);
         System.out.println("Stock added: " + "\n" + MongoUtilities.printSingleStock(Objects.requireNonNull(stock)));
     }
-
 
     public String readStockInFull(){
         return this.stockList.stream()
@@ -141,6 +139,12 @@ public enum EnteredGardenShop {
     }
     public Document getTicketFilter(){
         return new Document("store_id", new ObjectId(_id));
+    }
+    public Document getMatchingStock(ObjectId productId){
+        return stockList.stream()
+                .filter(product -> product.getObjectId("product_id").equals(productId))
+                .findFirst()
+                .orElse(new Document());
     }
 
     @Override

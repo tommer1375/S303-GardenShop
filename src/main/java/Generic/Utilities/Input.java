@@ -19,6 +19,7 @@ public class Input {
                 exceptionCaught = false;
             } catch (InputMismatchException ignored) {
                 System.out.println("A whole number ranging from -128 to 127 is expected.");
+                s.nextLine();
                 exceptionCaught = true;
             }
         } while(exceptionCaught);
@@ -35,6 +36,7 @@ public class Input {
                 exceptionCaught = false;
             } catch (InputMismatchException ignored) {
                 System.out.println("A whole number ranging from -2147483648 to 2147483647 is expected");
+                s.nextLine();
                 exceptionCaught = true;
             }
         } while(exceptionCaught);
@@ -51,6 +53,7 @@ public class Input {
                 exceptionCaught = false;
             } catch (InputMismatchException ignored) {
                 System.out.println("A fractional number ranging from from 3.4e−038 to 3.4e+038 is expected");
+                s.nextLine();
                 exceptionCaught = true;
             }
         } while(exceptionCaught);
@@ -67,6 +70,7 @@ public class Input {
                 exceptionCaught = false;
             } catch (InputMismatchException ignored) {
                 System.out.println("A fractional number ranging from 1.7e−308 to 1.7e+308 is expected");
+                s.nextLine();
                 exceptionCaught = true;
             }
         } while(exceptionCaught);
@@ -85,6 +89,7 @@ public class Input {
                 exceptionCaught = false;
             } catch (Exception e) {
                 System.out.println(e.getMessage());
+                s.nextLine();
                 exceptionCaught = true;
             }
         } while(exceptionCaught);
@@ -127,6 +132,7 @@ public class Input {
                 }
             } catch (Exception e) {
                 System.out.println(e.getMessage());
+                s.nextLine();
                 exceptionCaught = true;
             }
         } while(exceptionCaught);
