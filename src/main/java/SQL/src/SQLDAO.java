@@ -53,7 +53,7 @@ public class SQLDAO implements DAO {
 
 
     //Mostrar el stock de un producto de una tienda
-    public static void loadProducts(Connection connection, ArrayList<GardenShop> gardenshop) { oducto de una tienda
+    public static void loadProducts(Connection connection, ArrayList<GardenShop> gardenshop) { 
         String loadProducts = "SELECT p.idproducts, p.type, p.price, p.height, p.color, p.material, s.quantity" +
                 "FROM stock s" +
                 "JOIN products p ON s.idproduct = p.idproducts" +
@@ -62,6 +62,25 @@ public class SQLDAO implements DAO {
         try (Statement stProducts = connection.createStatement();
              ResultSet rsProducts = stProducts.executeQuery(loadProducts)) {
 
+            while (rsProducts.next()) {
+                int idProduct = rsProducts.getInt("idproducts");
+                String type = rsProducts.getString("type");
+                double price = rsProducts.getDouble("price");
+                double height = rsProducts.getDouble("height");
+                String color = rsProducts.getString("color");
+                String material = rsProducts.getString("material");
+                int quantity = rsProducts.getInt("quantity");
+
+                // Imprimir los detalles del producto
+                System.out.println("Product ID: " + idProduct);
+                System.out.println("Type: " + type);
+                System.out.println("Price: " + price);
+                System.out.println("Height: " + height);
+                System.out.println("Color: " + color);
+                System.out.println("Material: " + material);
+                System.out.println("Quantity: " + quantity);
+                System.out.println();
+            }
 
         } catch (SQLException e) {
             System.out.println("Error to load products: " + e.getMessage());
@@ -69,22 +88,29 @@ public class SQLDAO implements DAO {
         }
     }
 
+
     //Importe total de ventas de una tienda
-    public static void loadShoplSales(Connection connection, ArrayList<GardenShop> gardenshop) {de una tienda
-        String loadShopSales = "SELECT SUM(p.total) AS total_sales" +
-                "FROM purchases p" +
-                "JOIN tickets t ON p.idtickets = t.idtickets" +
-                "JOIN stores s ON t.idstore = s.idstores" +
-                "WHERE s.name = 'gardenshop'";
+    public static void loadShoplSales(Connection connection, ArrayList<GardenShop> gardenshop) {
+        String loadShopSales = "SELECT SUM(p.total) AS total_sales " +
+            "FROM purchases p " +
+            "JOIN tickets t ON p.idtickets = t.idtickets " +
+            "JOIN stores s ON t.idstore = s.idstores " +
+            "WHERE s.name = 'gardenshop'";
 
-        try (Statement stProducts = connection.createStatement();
-             ResultSet rsProducts = stProducts.executeQuery(loadShopSales)) {
+    try (Statement stProducts = connection.createStatement();
+    ResultSet rsProducts = stProducts.executeQuery(loadShopSales)) {
 
+        while (rsProducts.next()) {
+            double totalSales = rsProducts.getDouble("total_sales");
 
-        } catch (SQLException e) {
-            System.out.println("Error to load products: " + e.getMessage());
-            throw new RuntimeException(e);
+            System.out.println("Total sales in gardenshop: $" + totalSales);
         }
+
+    } catch (SQLException e) {
+        System.out.println("Error to load shop sales: " + e.getMessage());
+        throw new RuntimeException(e);
+    }
+}
     }
     //Valor de los productos de una tienda
     public static void loadTotalProducts(Connection connection, ArrayList<GardenShop> gardenshop) {
@@ -96,7 +122,11 @@ public class SQLDAO implements DAO {
 
         try (Statement stProducts = connection.createStatement();
              ResultSet rsProducts = stProducts.executeQuery(loadTotalProducts)) {
+            while (rsProducts.next()) {
+                double totalValue = rsProducts.getDouble("total_value");
 
+                System.out.println("Total value of products in Garden Shop: $" + totalValue);
+            }
 
         } catch (SQLException e) {
             System.out.println("Error to load products: " + e.getMessage());
@@ -115,10 +145,33 @@ public class SQLDAO implements DAO {
         try (Statement stProducts = connection.createStatement();
              ResultSet rsProducts = stProducts.executeQuery(loadTotalSales)) {
 
+            while (rsProducts.next()) {
+                int idTickets = rsProducts.getInt("idtickets");
+                String storeName = rsProducts.getString("store_name");
+                String productType = rsProducts.getString("type");
+                double productPrice = rsProducts.getDouble("price");
+                double productHeight = rsProducts.getDouble("height");
+                String productColor = rsProducts.getString("color");
+                String productMaterial = rsProducts.getString("material");
+                int productQuantity = rsProducts.getInt("quantity");
+                double productTotal = rsProducts.getDouble("total");
 
-        } catch (SQLException e) {
-            System.out.println("Error to load products: " + e.getMessage());
-            throw new RuntimeException(e);
+                // Imprimir los datos obtenidos
+                System.out.println("Ticket ID: " + idTickets);
+                System.out.println("Store Name: " + storeName);
+                System.out.println("Product Type: " + productType);
+                System.out.println("Product Price: " + productPrice);
+                System.out.println("Product Height: " + productHeight);
+                System.out.println("Product Color: " + productColor);
+                System.out.println("Product Material: " + productMaterial);
+                System.out.println("Product Quantity: " + productQuantity);
+                System.out.println("Product Total: " + productTotal);
+            }
+
+            } catch(SQLException e){
+                System.out.println("Error to load products: " + e.getMessage());
+                throw new RuntimeException(e);
+            }
         }
     }
     public static void createGardenShop(Connection connection, String name) {
