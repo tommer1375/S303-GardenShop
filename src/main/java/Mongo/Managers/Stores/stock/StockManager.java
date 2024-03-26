@@ -1,19 +1,23 @@
 package Mongo.Managers.Stores.stock;
 
 import Generic.Utilities.Input;
+import Generic.classes.Stock;
 import Mongo.Managers.MongoUtilities;
 import Mongo.Managers.Stores.EnteredGardenShop;
-import Mongo.Managers.Stores.stock.qualities.Types;
+import Mongo.Managers.Stores.stock.qualities.*;
 import Mongo.Managers.Stores.stock.qualities.Error;
-import Mongo.Managers.Stores.stock.qualities.Quality;
 import org.bson.Document;
+import org.bson.types.ObjectId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 
 public class StockManager {
-    public static ArrayList<Document> createShopStock(){
+    private static final Logger logger = LoggerFactory.getLogger(StockManager.class);
+    public static ArrayList<Stock> createShopStock(){
         boolean isStockFilled = Input.readIfNo("Would you like to introduce any stock as of this moment?");
-        ArrayList<Document> stockList;
+        ArrayList<Stock> stockList;
         if(isStockFilled){
             stockList = fillShopStock();
         } else {
@@ -22,10 +26,23 @@ public class StockManager {
 
         return stockList;
     }
-    public static Document createStockDocument(){
-        Types type = Types.ERROR;
+    private static ArrayList<Stock> fillShopStock(){
+        ArrayList<Stock> documentArrayList = new ArrayList<>();
+        int quantity = Input.readInt("How many items would you like to add to the stock?");
 
-        while (type == Types.ERROR){
+        while (quantity > 0){
+            Stock stock = createStock();
+
+            if(stock != null){
+                documentArrayList.add(stock);
+                quantity--;
+            }
+        }
+        return documentArrayList;
+    }
+    public static Stock createStock(){
+        Types type;
+        do {
             switch (Input.readInt("""
                 Choose type:
                 1. Tree.
@@ -35,11 +52,11 @@ public class StockManager {
                 case 1 -> type = Types.TREE ;
                 case 2 -> type = Types.FLOWER;
                 case 3 -> type = Types.DECORATION;
+                default -> type = Types.ERROR;
             }
-        }
+        } while (type == Types.ERROR);
 
         double price = Input.readDouble("Introduce the price per unit.");
-
         int quantity = Input.readInt("Introduce how many there'll be in stock");
 
         Quality quality;
@@ -49,16 +66,34 @@ public class StockManager {
             case DECORATION -> quality = MongoUtilities.chooseDecoration();
             default -> quality = Error.ERROR;
         }
-        if(quality instanceof Error){
-            System.out.println("Invalid choice.");
-            return null;
-        }
 
-        return new Document()
-                .append("type" , type.getDbValue())
-                .append("price", price)
-                .append("quantity", quantity)
-                .append(quality.getClass().getSimpleName(), quality.getName());
+        return new Stock.Builder()
+                .product_id(new ObjectId().toString())
+                .type(type)
+                .price(price)
+                .quantity(quantity)
+                .quality(quality)
+                .build();
+    }
+    public static Stock createStockFromDocument(Document document){
+        Types type = Types.valueOf(document.getString("type").toUpperCase());
+        Quality quality = switch (type){
+            case TREE -> Height.valueOf(document.getString("Height"));
+            case FLOWER -> Color.valueOf(document.getString("Color"));
+            case DECORATION -> Material.valueOf(document.getString("Material"));
+            default -> {
+                logger.atInfo().log("Incorrect execution of quality assignment at createStockFromDocument() in:\n src/main/java/Mongo/Managers/Stores/stock/StockManager.java");
+                throw new IllegalStateException("Unexpected value: " + type);
+            }
+        };
+
+        return new Stock.Builder()
+                .product_id(document.getObjectId("product_id").toString())
+                .type(type)
+                .price(document.getDouble("price"))
+                .quantity(document.getInteger("quantity"))
+                .quality(quality)
+                .build();
     }
     public static void readStock(){
         switch (Input.readInt("""
@@ -105,15 +140,5 @@ public class StockManager {
         }
 
         return stock;
-    }
-    private static ArrayList<Document> fillShopStock(){
-        ArrayList<Document> documentArrayList = new ArrayList<>();
-        int quantity = Input.readInt("How many items would you like to add to the stock?");
-
-        while (quantity > 0){
-            documentArrayList.add(createStockDocument());
-            quantity--;
-        }
-        return documentArrayList;
     }
 }

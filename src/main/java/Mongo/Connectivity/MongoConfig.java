@@ -7,7 +7,11 @@ public class MongoConfig {
     private static final String PORT = "27017";
     private static final boolean IS_AUTH_APPLIED = false;
     private static final String AUTHMECHANISM = "SCRAM-SHA-256";
-    private static final String DATABASE = "gardenShop";
+    public static final String DATABASE = "gardenShop";
+    public enum Collections{
+        STORES,
+        TICKETS;
+    }
 
     public static String getConnectionString(){
         return "mongodb://" + MongoConfig.USER
@@ -17,4 +21,5 @@ public class MongoConfig {
                 + ((MongoConfig.IS_AUTH_APPLIED) ? "/?authMechanism=" + MongoConfig.AUTHMECHANISM + "&authSource=" : "/?authSource=")
                 + MongoConfig.DATABASE;
     }
+
 }

@@ -35,7 +35,7 @@ public enum EnteredGardenShop {
 
 //    CRUD Stock operations, to make use of the search info document variable.
     public void createToStock(){
-        Document stock = StockManager.createStockDocument();
+        Document stock = StockManager.createStock();
 
         if(stock == null){
             return;

@@ -1,6 +1,8 @@
 package Mongo.Managers.Stores;
 
 import Generic.Utilities.Input;
+import Generic.classes.GardenShop;
+import Generic.classes.Stock;
 import Mongo.Connectivity.MongoDAO;
 import Mongo.Managers.Stores.stock.StockManager;
 import Mongo.Managers.MongoUtilities;
@@ -14,14 +16,22 @@ public class GardenShopManager {
     public static void createGardenShop(){
         String name = Input.readString("Introduce the name of the Garden Shop you'd like to create.");
 
-        ArrayList<Document> stock = StockManager.createShopStock();
+        ArrayList<Stock> stock = StockManager.createShopStock();
 
         double currentStockValue = MongoUtilities.getCurrentStockValue(stock);
 
         MongoDAO.INSTANCE.createGardenShop(name, stock, currentStockValue);
     }
+    public static GardenShop createGardenShopFromDocument(Document document){
+
+
+        return new GardenShop.Builder()
+                ._id(document.getObjectId("_id").toString())
+                .name(document.getString("name"))
+                .stockList(document.getList("stock"))
+    }
     public static void readActiveGardenShops(){
-        List<Document> activeGardenShops = MongoDAO.INSTANCE.readGardenShops();
+        List<GardenShop> activeGardenShops = MongoDAO.INSTANCE.readGardenShops();
         String activeGardenShopPrintable = "Current Active Garden Shops:";
 
         if (activeGardenShops.isEmpty()){

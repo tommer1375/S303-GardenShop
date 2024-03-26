@@ -1,6 +1,7 @@
 package Mongo.Managers;
 
 import Generic.Utilities.Input;
+import Generic.classes.Stock;
 import Mongo.Connectivity.MongoDAO;
 import Mongo.Managers.Stores.EnteredGardenShop;
 import Mongo.Managers.Stores.stock.qualities.*;
@@ -45,14 +46,10 @@ public class MongoUtilities {
                 + "\n\tName: " + document.getString("name")
                 + "\n\tCurrent Value: " + document.getDouble("current_value") + "€";
     }
-    public static double getCurrentStockValue(ArrayList<Document> stock){
-        double currentStockValue = 0;
-
-        for (Document document : stock){
-            currentStockValue += document.getDouble("price");
-        }
-
-        return currentStockValue;
+    public static double getCurrentStockValue(ArrayList<Stock> stockList){
+        return stockList.stream()
+                .mapToDouble(Stock::getPrice)
+                .sum();
     }
     public static boolean enterGardenShop(String name){
         Document currentShop = MongoDAO.INSTANCE.readGardenShop(name);
@@ -120,8 +117,8 @@ public class MongoUtilities {
                 2. Plastic.
                 """);
         return switch (choice){
-            case 1 -> Decoration.WOOD;
-            case 2 -> Decoration.PLASTIC;
+            case 1 -> Material.WOOD;
+            case 2 -> Material.PLASTIC;
             default -> Error.DECORATION;
         };
     }

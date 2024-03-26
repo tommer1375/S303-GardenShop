@@ -1,6 +1,6 @@
 package Mongo.Managers.Stores.stock.qualities;
 
-public enum Decoration implements Quality {
+public enum Material implements Quality {
     WOOD,
     PLASTIC;
 

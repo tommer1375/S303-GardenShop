@@ -1,9 +1,13 @@
 package Mongo.Connectivity;
 
 import Generic.DAO;
+import Generic.classes.GardenShop;
+import Generic.classes.Stock;
 import Mongo.Managers.MongoUtilities;
 import Mongo.Managers.Stores.EnteredGardenShop;
+import Mongo.Managers.Stores.stock.StockManager;
 import com.mongodb.ConnectionString;
+import com.mongodb.MongoClientException;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.*;
 import com.mongodb.client.model.InsertOneOptions;
@@ -17,43 +21,51 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public enum MongoDAO implements DAO {
     INSTANCE;
 
     private final Logger logger = LoggerFactory.getLogger(MongoDAO.class);
-    private final List<MongoCollection<Document>> collectionsList = new ArrayList<>();
+    private final MongoClientSettings mongoClientSettings;
 
     MongoDAO(){
         ConnectionString connectionString = new ConnectionString(MongoConfig.getConnectionString());
-        MongoClientSettings mongoClientSettings = MongoClientSettings.builder()
+
+        mongoClientSettings = MongoClientSettings.builder()
                 .applyConnectionString(connectionString)
                 .build();
-        MongoClient mongoClient = MongoClients.create(mongoClientSettings);
-        MongoDatabase mongoDatabase = mongoClient.getDatabase("gardenShop");
-        for (Collections collection : Collections.values()){
-            collectionsList.add(mongoDatabase.getCollection(collection.name().toLowerCase()));
-        }
-        logger.atInfo().log("Connection made without any errors for connection string: "
+
+        logger.atInfo().log("Connection made without any errors for connection string:\n"
                     + MongoConfig.getConnectionString());
     }
 
     //    Create methods implemented
     @Override
-    public void createGardenShop(String name, ArrayList<Document> stock, double currentStockValue) {
-        Document gardenShop = new Document("_id", new ObjectId())
-                .append("name", name)
-                .append("stock", stock)
-                .append("current_stock_value", currentStockValue)
-                .append("current_sales_value", 0.0)
-                .append("status", "Active");
+    public void createGardenShop(String name, ArrayList<Stock> stockList, double currentStockValue) {
+        try(MongoClient mongoClient = MongoClients.create(mongoClientSettings)){
+            MongoDatabase mongoDatabase = mongoClient.getDatabase(MongoConfig.DATABASE);
+            MongoCollection<Document> stores = mongoDatabase.getCollection(MongoConfig.Collections.STORES.name().toLowerCase());
 
-        InsertOneOptions options = new InsertOneOptions()
-                .bypassDocumentValidation(false);
+            ArrayList<Document> stockDocumentList = stockList.stream()
+                    .map(Stock::getStockDocument)
+                    .collect(Collectors.toCollection(ArrayList::new));
 
-        collectionsList.get(Collections.STORES.getIndex()).insertOne(gardenShop, options);
-        logger.atInfo().log("Garden Shop Properly Created:\n"
-                + MongoUtilities.extractDocumentDescription(gardenShop));
+            Document gardenShop = new Document("_id", new ObjectId())
+                    .append("name", name)
+                    .append("stock", stockDocumentList)
+                    .append("current_stock_value", currentStockValue)
+                    .append("current_sales_value", 0.0)
+                    .append("status", "Active");
+
+            InsertOneOptions options = new InsertOneOptions()
+                    .bypassDocumentValidation(false);
+
+            stores.insertOne(gardenShop, options);
+            logger.atInfo().log("Garden Shop Properly Created:\n" + MongoUtilities.extractDocumentDescription(gardenShop));
+        } catch (MongoClientException e){
+            logger.atError().log("Error at MongoClient creation on MongoDAO.INSTANCE.createGardenShop()", e);
+        }
     }
     @Override
     public void createStock(Document filter, List<Document> newStockList){
@@ -90,9 +102,19 @@ public enum MongoDAO implements DAO {
 
 //    Read methods implemented
     @Override
-    public List<Document> readGardenShops() {
+    public List<GardenShop> readGardenShops() {
+        try(MongoClient mongoClient = MongoClients.create(mongoClientSettings)){
+            MongoDatabase mongoDatabase = mongoClient.getDatabase(MongoConfig.DATABASE);
+            MongoCollection<Document> stores = mongoDatabase.getCollection(MongoConfig.Collections.STORES.name().toLowerCase());
+
+
+        } catch (MongoClientException e){
+            logger.atError().log("Error at MongoClient creation on MongoDAO.INSTANCE.readGardenShops()", e);
+            return null;
+        }
         return collectionsList.get(Collections.STORES.getIndex())
                 .find()
+                .map(StockManager::createStockFromDocument)
                 .into(new ArrayList<>());
     }
     @Override
