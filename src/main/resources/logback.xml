@@ -1,5 +1,5 @@
 <configuration>
-<!--    Appends-->
+<!--    Appenders-->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n%n</pattern>
@@ -17,16 +17,24 @@
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n%n</pattern>
         </encoder>
     </appender>
+    <appender name="MONGODB" class="net.logstash.logback.appender.LoggingEventAsyncDisruptorAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
+        <destinationType>collectionName</destinationType>
+        <collectionName>logs</collectionName>
+        <uri>mongodb://localhost:27017/your_database_name</uri>
+    </appender>
 
 <!--    Root level-->
     <root level="INFO">
         <appender-ref ref="CONSOLE" />
         <appender-ref ref="FILE" />
+        <appender-ref ref="MONGODB" />
     </root>
 
 <!--    Loggers-->
     <logger name="org.mongodb.driver" level="ERROR" additivity="false">
         <appender-ref ref="CONSOLE" />
         <appender-ref ref="FILE_MONGO" />
+        <appender-ref ref="MONGODB" />
     </logger>
 </configuration>

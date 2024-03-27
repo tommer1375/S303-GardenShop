@@ -22,6 +22,8 @@ dependencies {
     implementation 'org.slf4j:slf4j-api:2.0.12'
 //    Logback, latest version as of 25/03/2024
     implementation 'ch.qos.logback:logback-classic:1.5.3'
+//    Logstash, latest version as of 27/03/2024
+    implementation 'net.logstash.logback:logstash-logback-encoder:7.4'
 }
 
 test {
