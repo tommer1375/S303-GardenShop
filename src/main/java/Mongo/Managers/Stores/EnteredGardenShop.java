@@ -60,11 +60,11 @@ public enum EnteredGardenShop {
     public String readStockInQuantities(){
         return stockList.stream()
                 .collect(Collectors.groupingBy(
-                        stock -> stock.getType().getClass().getSimpleName(),
+                        stock -> stock.getType().name(),
                         Collectors.counting()))
                 .entrySet().stream()
                 .map(entry -> "- " + entry.getKey() + ": " + entry.getValue())
-                .collect(Collectors.joining("\n", "Current Stock:", "")
+                .collect(Collectors.joining("\n", "Current Stock:\n", "")
         );
     }
     public String readTickets(){
@@ -165,6 +165,6 @@ public enum EnteredGardenShop {
         return "Store_id: " + _id
                 + "\n\tName: " + name
                 + "\n\tCurrent Stock Value: " + currentStockValue
-                + "\n\tCurrent Sales Value: " + currentSalesValue;
+                + "\n\tCurrent Sales Value: " + currentSalesValue + "\n";
     }
 }

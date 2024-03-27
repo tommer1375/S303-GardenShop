@@ -25,7 +25,9 @@ public class GardenShopManager {
     }
     public static GardenShop createGardenShopFromDocument(Document document){
         String product_id = document.getObjectId("_id").toString();
-        List<Stock> stockList = MongoDAO.INSTANCE.readShopStock(product_id);
+        List<Stock> stockList = document.getList("stock", Document.class).stream()
+                .map(StockManager::createStockFromDocument)
+                .toList();
 
         return new GardenShop.Builder()
                 ._id(document.getObjectId("_id").toString())

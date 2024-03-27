@@ -1,0 +1,27 @@
+23:52:46.786 [main] INFO  Mongo.Connectivity.MongoDAO - Connection made without any errors for connection string:
+mongodb://it-academy-access:fneH5P95Yqmfnm@localhost:27017/?authSource=gardenShop
+
+23:56:41.753 [main] INFO  Mongo.Connectivity.MongoDAO - Connection made without any errors for connection string:
+mongodb://it-academy-access:fneH5P95Yqmfnm@localhost:27017/?authSource=gardenShop
+
+00:03:20.231 [main] INFO  Mongo.Connectivity.MongoDAO - Connection made without any errors for connection string:
+mongodb://it-academy-access:fneH5P95Yqmfnm@localhost:27017/?authSource=gardenShop
+
+00:05:28.972 [main] INFO  Mongo.Connectivity.MongoDAO - Connection made without any errors for connection string:
+mongodb://it-academy-access:fneH5P95Yqmfnm@localhost:27017/?authSource=gardenShop
+
+00:10:34.938 [main] INFO  Mongo.Connectivity.MongoDAO - Connection made without any errors for connection string:
+mongodb://it-academy-access:fneH5P95Yqmfnm@localhost:27017/?authSource=gardenShop
+
+00:17:21.641 [main] INFO  Mongo.Connectivity.MongoDAO - Connection made without any errors for connection string:
+mongodb://it-academy-access:fneH5P95Yqmfnm@localhost:27017/?authSource=gardenShop
+
+00:27:05.230 [main] INFO  Mongo.Connectivity.MongoDAO - Connection made without any errors for connection string:
+mongodb://it-academy-access:fneH5P95Yqmfnm@localhost:27017/?authSource=gardenShop
+
+00:34:28.965 [main] INFO  Mongo.Connectivity.MongoDAO - Connection made without any errors for connection string:
+mongodb://it-academy-access:fneH5P95Yqmfnm@localhost:27017/?authSource=gardenShop
+
+00:35:23.542 [main] INFO  Mongo.Connectivity.MongoDAO - Connection made without any errors for connection string:
+mongodb://it-academy-access:fneH5P95Yqmfnm@localhost:27017/?authSource=gardenShop
+

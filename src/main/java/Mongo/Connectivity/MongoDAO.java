@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public enum MongoDAO implements DAO {
@@ -164,10 +165,10 @@ public enum MongoDAO implements DAO {
             MongoDatabase mongoDatabase = mongoClient.getDatabase(MongoConfig.DATABASE);
             MongoCollection<Document> stores = mongoDatabase.getCollection(MongoConfig.Collections.STORES.name().toLowerCase());
 
-            return stores.find(new Document("_id", new ObjectId(gardenShop_id)))
-                    .projection(Projections.include("stock"))
+            return Objects.requireNonNull(stores.find(new Document("_id", new ObjectId(gardenShop_id))).first())
+                    .getList("stock", Document.class).stream()
                     .map(StockManager::createStockFromDocument)
-                    .into(new ArrayList<>());
+                    .collect(Collectors.toList());
         } catch (MongoClientException e){
             logger.atError().log("Error at MongoClient creation on MongoDAO.INSTANCE.readShopStock()", e);
             return null;
@@ -227,7 +228,7 @@ public enum MongoDAO implements DAO {
 
             UpdateResult updated = stores.updateOne(filter, command);
 
-            return updated.wasAcknowledged();
+            return updated.wasAcknowledged() && updated.getModifiedCount() > 0;
         } catch (MongoClientException e){
             logger.atError().log("Error at MongoClient creation on MongoDAO.INSTANCE.deleteGardenShop()", e);
             return false;

@@ -11,7 +11,7 @@ public class GardenShop {
     private final String name;
     private final double currentStockValue;
     private final double currentSalesValue;
-    private List<Stock> stockList;
+    private final List<Stock> stockList;
 
     public GardenShop(Builder builder){
         this._id = builder._id;
@@ -19,19 +19,6 @@ public class GardenShop {
         this.currentStockValue = builder.currentStockValue;
         this.currentSalesValue = builder.currentSalesValue;
         this.stockList = builder.stockList;
-    }
-
-    private String getStock(){
-        String textToReturn = this.name + "'s stock:";
-        if (this.stockList.isEmpty()){
-            return textToReturn = textToReturn.concat("\n\t- Empty.");
-        }
-
-        for (Stock stock : stockList){
-            textToReturn = textToReturn.concat(stock.toString());
-        }
-
-        return textToReturn;
     }
     @Override
     public String toString() {
