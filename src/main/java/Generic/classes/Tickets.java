@@ -21,6 +21,9 @@ public class Tickets {
             textToReturn = textToReturn.concat("\t\tName: " + "\tQuantity: " + "\tPrice: ");
         }
 //        Implement code to get the product's name, and price and place it on a string to send back
+/*textToReturn = textToReturn.concat("\t\t- Name: " + product.getName() + 
+                                             "\tQuantity: " + product.getQuantity() + 
+                                             "\tPrice: " + product.getPrice() + "€\n");*/
         return textToReturn;
     }
     @Override
