@@ -1,6 +1,7 @@
 package Generic.classes;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Tickets {
     private final String _id;
@@ -8,26 +9,52 @@ public class Tickets {
     private final List<Products> productsList;
     private final double total;
 
-    public Tickets(String _id, String store_id, List<Products> productsList, double total){
-        this._id = _id;
-        this.store_id = store_id;
-        this.productsList = productsList;
-        this.total = total;
+    public Tickets(Builder builder){
+        this._id = builder._id;
+        this.store_id = builder.store_id;
+        this.productsList = builder.productsList;
+        this.total = builder.total;
     }
 
     public String getProductsList(){
-        String textToReturn = "";
-        for (Products product : productsList){
-            textToReturn = textToReturn.concat("\t\tName: " + "\tQuantity: " + "\tPrice: ");
-        }
-//        Implement code to get the product's name, and price and place it on a string to send back
-        return textToReturn;
+        return this.productsList.stream()
+                .map(Products::toString)
+                .collect(Collectors.joining("", "\n\tProducts bought:", ""));
     }
     @Override
     public String toString() {
         return "Ticket " + _id
                 + "\n\tStore ID: " + this.store_id
-                + "\n\tProducts bought: " + getProductsList()
+                + getProductsList()
                 + "\n\tTotal: " + this.total + "€";
+    }
+    public static class Builder{
+        private String _id;
+        private String store_id;
+        private List<Products> productsList;
+        private double total;
+        public Builder(){
+
+        }
+
+        public Builder _id(String _id){
+            this._id = _id;
+            return this;
+        }
+        public Builder store_id(String store_id){
+            this.store_id = store_id;
+            return this;
+        }
+        public Builder productsList(List<Products> productsList){
+            this.productsList = productsList;
+            return this;
+        }
+        public Builder total(double total){
+            this.total = total;
+            return this;
+        }
+        public Tickets build(){
+            return new Tickets(this);
+        }
     }
 }

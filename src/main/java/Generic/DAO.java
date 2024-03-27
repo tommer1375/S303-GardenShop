@@ -1,9 +1,10 @@
 package Generic;
 
 import Generic.classes.GardenShop;
+import Generic.classes.Products;
 import Generic.classes.Stock;
+import Generic.classes.Tickets;
 import org.bson.Document;
-import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,20 +12,20 @@ import java.util.List;
 public interface DAO {
 //    Creation methods
     void createGardenShop(String name, ArrayList<Stock> stockList, double currentValue);
-    void createStock(Document filter, List<Document> newStockList);
-    void createTicket(ObjectId _id, ObjectId store_id, List<Document> products, double total);
+    void createStock(String store_id, ArrayList<Stock> newStockList);
+    void createTicket(String store_id, List<Products> products, double total);
 
     //    Read methods
     List<GardenShop> readGardenShops();
     Document readGardenShop(String name);
-    List<Document> readShopStock(Document document);
-    List<Document> readPastTickets();
+    List<Stock> readShopStock(String gardenShop_id);
+    List<Tickets> readTicketsFromEnteredStore(String store_id);
 
 //    Update methods
-    int updateStock(Document filter, Document update);
+    int updateStock(String store_id, Stock update);
 
 //    Delete methods
-    void deleteGardenShop();
-    int deleteSingleStock(Document filter);
-    void deleteFullStock(Document filter);
+    boolean deleteGardenShop();
+    int deleteSingleStock(String store_id, String stock_id);
+    void deleteFullStock(String store_id);
 }

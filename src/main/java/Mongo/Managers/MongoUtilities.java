@@ -41,11 +41,6 @@ public class MongoUtilities {
             }
         }
     }
-    public static String extractGardenShopDescription(Document document){
-        return "\n- Store_id: " + document.getObjectId("_id")
-                + "\n\tName: " + document.getString("name")
-                + "\n\tCurrent Value: " + document.getDouble("current_value") + "€";
-    }
     public static double getCurrentStockValue(ArrayList<Stock> stockList){
         return stockList.stream()
                 .mapToDouble(Stock::getPrice)
@@ -53,7 +48,6 @@ public class MongoUtilities {
     }
     public static boolean enterGardenShop(String name){
         Document currentShop = MongoDAO.INSTANCE.readGardenShop(name);
-
         if (currentShop == null){
             return false;
         }
@@ -63,15 +57,7 @@ public class MongoUtilities {
         double currentSalesValue = currentShop.getDouble("current_sales_value");
 
         EnteredGardenShop.INSTANCE.enter(_id, name, currentStockValue, currentSalesValue);
-
         return true;
-    }
-    public static String printSingleStock(Document stock){
-        return String.join("\n\t-"
-                , "Product_id: " + stock.getObjectId("product_id")
-                , "Type: " + stock.getString("type")
-                , "Price: " + stock.getDouble("price")
-                , "Quantity: " + stock.getInteger("quantity."));
     }
     public static Quality chooseHeight(){
         return switch (Input.readInt("""

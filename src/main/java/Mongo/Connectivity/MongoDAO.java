@@ -2,10 +2,13 @@ package Mongo.Connectivity;
 
 import Generic.DAO;
 import Generic.classes.GardenShop;
+import Generic.classes.Products;
 import Generic.classes.Stock;
+import Generic.classes.Tickets;
 import Mongo.Managers.MongoUtilities;
-import Mongo.Managers.Stores.EnteredGardenShop;
+import Mongo.Managers.Stores.GardenShopManager;
 import Mongo.Managers.Stores.stock.StockManager;
+import Mongo.Managers.Tickets.TicketManager;
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientException;
 import com.mongodb.MongoClientSettings;
@@ -65,39 +68,67 @@ public enum MongoDAO implements DAO {
             logger.atInfo().log("Garden Shop Properly Created:\n" + MongoUtilities.extractDocumentDescription(gardenShop));
         } catch (MongoClientException e){
             logger.atError().log("Error at MongoClient creation on MongoDAO.INSTANCE.createGardenShop()", e);
+            System.exit(0);
         }
     }
     @Override
-    public void createStock(Document filter, List<Document> newStockList){
-        collectionsList
-                .get(Collections.STORES.getIndex())
-                .updateOne(filter, new Document("stock", newStockList));
+    public void createStock(String store_id, ArrayList<Stock> newStockList){
+        try(MongoClient mongoClient = MongoClients.create(mongoClientSettings)){
+            MongoDatabase mongoDatabase = mongoClient.getDatabase(MongoConfig.DATABASE);
+            MongoCollection<Document> stores = mongoDatabase.getCollection(MongoConfig.Collections.STORES.name().toLowerCase());
+
+            Document filter = new Document("_id", store_id);
+            Document command = new Document("stock", newStockList);
+
+            stores.updateOne(filter, command);
+
+        } catch (MongoClientException e){
+            logger.atError().log("Error at MongoClient creation on MongoDAO.INSTANCE.createStock()", e);
+        }
     }
-    public void createSingleStock(Document filter, Document stock){
-        if(collectionsList
-                .get(Collections.STORES.getIndex())
-                .countDocuments(filter) > 0){
-            System.out.println("At least one matching product in stock, to change one of it's qualities, use the \"Modify item from stock\" option.");
-        } else {
-            collectionsList
-                    .get(Collections.STORES.getIndex())
-                    .updateMany(EnteredGardenShop.INSTANCE.getSearchInfo()
-                            , new Document("$push"
-                            , new Document("stock", stock)));
+    public int createSingleStock(String store_id, Stock stock){
+        try(MongoClient mongoClient = MongoClients.create(mongoClientSettings)){
+            MongoDatabase mongoDatabase = mongoClient.getDatabase(MongoConfig.DATABASE);
+            MongoCollection<Document> stores = mongoDatabase.getCollection(MongoConfig.Collections.STORES.name().toLowerCase());
+
+            Document filter = new Document("_id", store_id)
+                    .append("stock.product_id", new ObjectId(stock.getProduct_id()));
+
+            if(stores.countDocuments(filter) > 0){
+                return 0;
+            } else {
+                filter = new Document("_id", store_id);
+                Document command = new Document("$push", new Document("stock", stock.getStockDocument()));
+
+                stores.updateOne(filter, command);
+                return 1;
+            }
+        } catch (MongoClientException e){
+            logger.atError().log("Error at MongoClient creation on MongoDAO.INSTANCE.createStock()", e);
+            return 2;
         }
     }
     @Override
-    public void createTicket(ObjectId _id, ObjectId store_id, List<Document> products, double total) {
-        Document ticket = new Document()
-                .append("_id", _id)
-                .append("store_id", store_id)
-                .append("products", new ArrayList<>(products))
-                .append("total", total);
+    public void createTicket(String store_id, List<Products> products, double total) {
+        try(MongoClient mongoClient = MongoClients.create(mongoClientSettings)){
+            MongoDatabase mongoDatabase = mongoClient.getDatabase(MongoConfig.DATABASE);
+            MongoCollection<Document> tickets = mongoDatabase.getCollection(MongoConfig.Collections.TICKETS.name().toLowerCase());
 
-        InsertOneOptions options = new InsertOneOptions()
-                .bypassDocumentValidation(false);
+            List<Document> productsDocumentList = products.stream().map(Products::getProductDocument).toList();
 
-        collectionsList.get(Collections.TICKETS.getIndex()).insertOne(ticket, options);
+            Document ticket = new Document()
+                    .append("_id", new ObjectId())
+                    .append("store_id", new ObjectId(store_id))
+                    .append("products", new ArrayList<>(productsDocumentList))
+                    .append("total", total);
+
+            InsertOneOptions options = new InsertOneOptions()
+                    .bypassDocumentValidation(false);
+
+            tickets.insertOne(ticket, options);
+        } catch (MongoClientException e){
+            logger.atError().log("Error at MongoClient creation on MongoDAO.INSTANCE.createStock()", e);
+        }
     }
 
 //    Read methods implemented
@@ -107,82 +138,127 @@ public enum MongoDAO implements DAO {
             MongoDatabase mongoDatabase = mongoClient.getDatabase(MongoConfig.DATABASE);
             MongoCollection<Document> stores = mongoDatabase.getCollection(MongoConfig.Collections.STORES.name().toLowerCase());
 
-
+            return stores.find()
+                    .map(GardenShopManager::createGardenShopFromDocument)
+                    .into(new ArrayList<>());
         } catch (MongoClientException e){
             logger.atError().log("Error at MongoClient creation on MongoDAO.INSTANCE.readGardenShops()", e);
             return null;
         }
-        return collectionsList.get(Collections.STORES.getIndex())
-                .find()
-                .map(StockManager::createStockFromDocument)
-                .into(new ArrayList<>());
     }
     @Override
     public Document readGardenShop(String name){
-        return collectionsList
-                .get(Collections.STORES.getIndex())
-                .find(new Document("name", name))
-                .first();
+        try(MongoClient mongoClient = MongoClients.create(mongoClientSettings)){
+            MongoDatabase mongoDatabase = mongoClient.getDatabase(MongoConfig.DATABASE);
+            MongoCollection<Document> stores = mongoDatabase.getCollection(MongoConfig.Collections.STORES.name().toLowerCase());
+
+            return stores.find(new Document("name", name)).first();
+        } catch (MongoClientException e){
+            logger.atError().log("Error at MongoClient creation on MongoDAO.INSTANCE.readGardenShops()", e);
+            return null;
+        }
     }
     @Override
-    public List<Document> readShopStock(Document searchInfo) {
-        return collectionsList
-                .get(Collections.STORES.getIndex())
-                .find(EnteredGardenShop.INSTANCE.getSearchInfo())
-                .projection(Projections.include("stock"))
-                .into(new ArrayList<>());
+    public List<Stock> readShopStock(String gardenShop_id) {
+        try(MongoClient mongoClient = MongoClients.create(mongoClientSettings)){
+            MongoDatabase mongoDatabase = mongoClient.getDatabase(MongoConfig.DATABASE);
+            MongoCollection<Document> stores = mongoDatabase.getCollection(MongoConfig.Collections.STORES.name().toLowerCase());
+
+            return stores.find(new Document("_id", new ObjectId(gardenShop_id)))
+                    .projection(Projections.include("stock"))
+                    .map(StockManager::createStockFromDocument)
+                    .into(new ArrayList<>());
+        } catch (MongoClientException e){
+            logger.atError().log("Error at MongoClient creation on MongoDAO.INSTANCE.readShopStock()", e);
+            return null;
+        }
     }
     @Override
-    public List<Document> readPastTickets() {
-        return collectionsList
-                .get(Collections.TICKETS.getIndex())
-                .find()
-                .filter(EnteredGardenShop.INSTANCE.getTicketFilter())
-                .into(new ArrayList<>());
+    public List<Tickets> readTicketsFromEnteredStore(String store_id) {
+        try(MongoClient mongoClient = MongoClients.create(mongoClientSettings)){
+            MongoDatabase mongoDatabase = mongoClient.getDatabase(MongoConfig.DATABASE);
+            MongoCollection<Document> tickets = mongoDatabase.getCollection(MongoConfig.Collections.TICKETS.name().toLowerCase());
+
+            Document filter = new Document("_id", new ObjectId(store_id));
+
+            return tickets.find()
+                    .filter(filter)
+                    .map(TicketManager::createTicketFromDocument)
+                    .into(new ArrayList<>());
+        } catch (MongoClientException e){
+            logger.atError().log("Error at MongoClient creation on MongoDAO.INSTANCE.readTicketsFromEnteredStore()", e);
+            return null;
+        }
     }
+
 
 //    Update methods implemented
     @Override
-    public int updateStock(Document filter, Document update) {
-        if(collectionsList.get(Collections.STORES.getIndex())
-                   .countDocuments(filter) == 0){
-            return 0;
-        } else {
-            UpdateResult result = collectionsList.get(Collections.STORES.getIndex())
-                    .updateOne(filter, update);
-            if (result.wasAcknowledged()) {
+    public int updateStock(String store_id, Stock update) {
+        try(MongoClient mongoClient = MongoClients.create(mongoClientSettings)){
+            MongoDatabase mongoDatabase = mongoClient.getDatabase(MongoConfig.DATABASE);
+            MongoCollection<Document> stores = mongoDatabase.getCollection(MongoConfig.Collections.STORES.name().toLowerCase());
+
+            Document filter = new Document("_id", store_id)
+                    .append("stock.product_id", update.getProduct_id());
+
+            UpdateResult updated = stores.updateOne(filter, update.getStockDocument());
+
+            if(updated.wasAcknowledged()){
                 return 1;
-            } else{
+            } else {
                 return 2;
             }
+        } catch (MongoClientException e){
+            logger.atError().log("Error at MongoClient creation on MongoDAO.INSTANCE.createStock()", e);
+            return 0;
         }
     }
 
     //    Delete methods implemented
     @Override
-    public void deleteGardenShop() {
-
+    public boolean deleteGardenShop() {
+        return true;
     }
 
     @Override
-    public int deleteSingleStock(Document filter) {
-        if(collectionsList.get(Collections.STORES.getIndex())
-                .countDocuments(filter) == 0){
-            return 0;
-        } else {
-            DeleteResult result = collectionsList.get(Collections.STORES.getIndex())
-                    .deleteOne(filter);
-            if (result.wasAcknowledged()) {
+    public int deleteSingleStock(String store_id, String stock_id) {
+        try(MongoClient mongoClient = MongoClients.create(mongoClientSettings)){
+            MongoDatabase mongoDatabase = mongoClient.getDatabase(MongoConfig.DATABASE);
+            MongoCollection<Document> stores = mongoDatabase.getCollection(MongoConfig.Collections.STORES.name().toLowerCase());
+
+            Document filter = new Document("_id", store_id)
+                    .append("stock.product_id", stock_id);
+
+            if(stores.countDocuments(filter) == 0){
+                return 0;
+            }
+
+            DeleteResult deleted = stores.deleteOne(filter);
+
+            if(deleted.wasAcknowledged()){
                 return 1;
-            } else{
+            } else {
                 return 2;
             }
+        } catch (MongoClientException e){
+            logger.atError().log("Error at MongoClient creation on MongoDAO.INSTANCE.deleteStock()", e);
+            return 2;
         }
     }
 
     @Override
-    public void deleteFullStock(Document filter) {
-        collectionsList.get(Collections.STORES.getIndex())
-                .updateOne(filter, new Document("$unset", new Document("stock", "")));
+    public void deleteFullStock(String store_id) {
+        try(MongoClient mongoClient = MongoClients.create(mongoClientSettings)){
+            MongoDatabase mongoDatabase = mongoClient.getDatabase(MongoConfig.DATABASE);
+            MongoCollection<Document> stores = mongoDatabase.getCollection(MongoConfig.Collections.STORES.name().toLowerCase());
+
+            Document filter = new Document("_id", new ObjectId(store_id));
+            Document command = new Document("$unset", new Document("stock", ""));
+
+            stores.updateOne(filter, command);
+        } catch (MongoClientException e){
+            logger.atError().log("Error at MongoClient creation on MongoDAO.INSTANCE.deleteFullStock()", e);
+        }
     }
 }

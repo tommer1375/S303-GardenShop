@@ -121,17 +121,17 @@ public class StockManager {
             default -> System.out.println("Invalid choice.");
         }
     }
-    public static Document updateStockDocument(Document stock){
+    public static Stock updateStockDocument(Stock stock){
         boolean isModifyQuantity = Input.readIfNo("Would you like to modify the quantity?");
         if (isModifyQuantity) {
             int newQuantity = Input.readInt("Introduce new quantity.");
-            stock.put("quantity", newQuantity);
+            stock.setQuantity(newQuantity);
         }
 
         boolean isModifyPrice = Input.readIfNo("Would you like to modify the price?");
         if (isModifyPrice){
             double newPrice = Input.readDouble("Introduce new price");
-            stock.put("price", newPrice);
+            stock.setPrice(newPrice);
         }
 
         if(!isModifyPrice && !isModifyQuantity){

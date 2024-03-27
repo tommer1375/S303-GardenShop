@@ -20,19 +20,23 @@ public class Stock {
         this.quality = builder.quality;
     }
 
+    public String getProduct_id() {
+        return product_id;
+    }
+    public Types getType() {
+        return type;
+    }
     public double getPrice() {
         return price;
     }
 
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
     public void setPrice(double price) {
-//        Setup to update the product on the server as well as here
         this.price = price;
     }
 
-    public void setQuantity(int quantity) {
-//        Setup how to get the price from product_id and multiply by current quantity to set the total.
-        this.quantity = quantity;
-    }
     public Document getStockDocument(){
         return new Document()
                 .append("product_id", new ObjectId(this.product_id))

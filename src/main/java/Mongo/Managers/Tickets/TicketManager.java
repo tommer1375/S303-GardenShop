@@ -1,82 +1,41 @@
 package Mongo.Managers.Tickets;
 
-import Generic.Utilities.Input;
+import Generic.classes.Products;
+import Generic.classes.Tickets;
 import Mongo.Connectivity.MongoDAO;
 import Mongo.Managers.Stores.EnteredGardenShop;
+import Mongo.Managers.Tickets.Products.ProductManager;
 import org.bson.Document;
-import org.bson.types.ObjectId;
 
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class TicketManager {
     public static void createTicket(){
-        ObjectId store_id= EnteredGardenShop.INSTANCE.getSearchInfo().getObjectId("_id");
-
-        List<Document> productsList = createProductList();
+        List<Products> productsList = ProductManager.createProductList();
 
         double total = productsList.stream()
-                .mapToDouble(product -> product.getDouble("total"))
+                .mapToDouble(Products::getTotal)
                 .sum();
 
-        MongoDAO.INSTANCE.createTicket(new ObjectId(), store_id, productsList, total);
+        MongoDAO.INSTANCE.createTicket(EnteredGardenShop.INSTANCE.get_id(), productsList, total);
     }
-    private static List<Document> createProductList(){
-        return  Stream.generate(() -> {
-                    Document product = createProduct();
-                    while (product.isEmpty()) {
-                        product = createProduct();
-                    }
-                    return product;
-                })
-                .takeWhile(product -> Input.readIfNo("Would you like to add another product?"))
-                .collect(Collectors.toList());
-    }
-    private static Document createProduct(){
-        ObjectId productID = new ObjectId(Input.readString(EnteredGardenShop.INSTANCE.readStockInFull()
-                + "Choose which product you'd like to introduce into the ticket"));
-        Document matchingStock = EnteredGardenShop.INSTANCE.getMatchingStock(productID);
+    public static Tickets createTicketFromDocument(Document document){
+        List<Products> productsList = document.getList("", Document.class).stream()
+                .map(ProductManager::createProductFromDocument)
+                .toList();
 
-        if(matchingStock.isEmpty()) {
-            System.out.println("No matching item exists in stock.");
-            return new Document();
-        }
+        double total = productsList.stream()
+                .mapToDouble(Products::getTotal)
+                .sum();
 
-        int quantity = Input.readInt("How many would you like to add?");
-        double total = matchingStock.getDouble("price") * quantity;
-
-        return new Document()
-                .append("product_id", matchingStock.getObjectId("product_id"))
-                .append("quantity", quantity)
-                .append("total", total);
+        return new Tickets.Builder()
+                ._id(document.getObjectId("_id").toString())
+                .store_id(document.getObjectId("store_id").toString())
+                .productsList(productsList)
+                .total(total)
+                .build();
     }
     public static void readPastTickets(){
-        MongoDAO.INSTANCE.readPastTickets().stream()
-                .map(TicketManager::ticketToString)
-                .forEach(System.out::println);
-    }
-    public static String ticketToString(Document ticket){
-        return "- Ticket_id" + ticket.getObjectId("_id")
-                + "\n\tStore_id" + ticket.getString("ticket_id")
-                + productsToString(ticket)
-                + calculateTotal(ticket);
-    }
-    private static String productsToString(Document ticket){
-        return ticket.getList("products", Document.class).stream()
-                .map(TicketManager::productToString)
-                .collect(Collectors.joining("\n\t\t- ", "\n\tStock: ", ""));
-    }
-    private static String productToString(Document product){
-        return "[ Product_id" + product.getObjectId("product_id") + ", "
-                + "Quantity: " + product.getInteger("quantity") + ", "
-                + "Total: " + product.getDouble("total") + " ]";
-    }
-    private static String calculateTotal(Document ticket){
-        return "\n\tTotal: "
-                + ticket.getList("products", Document.class).stream()
-                    .mapToDouble(document -> document.getDouble("total"))
-                    .sum()
-                + "€";
+        System.out.println(EnteredGardenShop.INSTANCE.readTickets());
     }
 }
