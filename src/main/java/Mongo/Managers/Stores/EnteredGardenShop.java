@@ -143,7 +143,11 @@ public enum EnteredGardenShop {
         }
     }
     public void deleteFromActiveShops(){
-
+        if(MongoDAO.INSTANCE.deleteGardenShop(this._id)){
+            System.out.println("Store properly deleted.");
+        } else {
+            System.out.println("Failed to declare bankruptcy, check for connection errors.");
+        }
     }
 
     public String get_id() {

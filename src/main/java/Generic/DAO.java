@@ -25,7 +25,7 @@ public interface DAO {
     int updateStock(String store_id, Stock update);
 
 //    Delete methods
-    boolean deleteGardenShop();
+    boolean deleteGardenShop(String store_id);
     int deleteSingleStock(String store_id, String stock_id);
     void deleteFullStock(String store_id);
 }

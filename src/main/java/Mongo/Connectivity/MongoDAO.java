@@ -104,7 +104,7 @@ public enum MongoDAO implements DAO {
                 return 1;
             }
         } catch (MongoClientException e){
-            logger.atError().log("Error at MongoClient creation on MongoDAO.INSTANCE.createStock()", e);
+            logger.atError().log("Error at MongoClient creation on MongoDAO.INSTANCE.createSingleStock()", e);
             return 2;
         }
     }
@@ -127,7 +127,7 @@ public enum MongoDAO implements DAO {
 
             tickets.insertOne(ticket, options);
         } catch (MongoClientException e){
-            logger.atError().log("Error at MongoClient creation on MongoDAO.INSTANCE.createStock()", e);
+            logger.atError().log("Error at MongoClient creation on MongoDAO.INSTANCE.createTicket()", e);
         }
     }
 
@@ -154,7 +154,7 @@ public enum MongoDAO implements DAO {
 
             return stores.find(new Document("name", name)).first();
         } catch (MongoClientException e){
-            logger.atError().log("Error at MongoClient creation on MongoDAO.INSTANCE.readGardenShops()", e);
+            logger.atError().log("Error at MongoClient creation on MongoDAO.INSTANCE.readGardenShop()", e);
             return null;
         }
     }
@@ -210,15 +210,28 @@ public enum MongoDAO implements DAO {
                 return 2;
             }
         } catch (MongoClientException e){
-            logger.atError().log("Error at MongoClient creation on MongoDAO.INSTANCE.createStock()", e);
+            logger.atError().log("Error at MongoClient creation on MongoDAO.INSTANCE.updateStock()", e);
             return 0;
         }
     }
 
     //    Delete methods implemented
     @Override
-    public boolean deleteGardenShop() {
-        return true;
+    public boolean deleteGardenShop(String store_id) {
+        try(MongoClient mongoClient = MongoClients.create(mongoClientSettings)){
+            MongoDatabase mongoDatabase = mongoClient.getDatabase(MongoConfig.DATABASE);
+            MongoCollection<Document> stores = mongoDatabase.getCollection(MongoConfig.Collections.STORES.name().toLowerCase());
+
+            Document filter = new Document("_id", store_id);
+            Document command = new Document("$set", new Document("status", "Inactive"));
+
+            UpdateResult updated = stores.updateOne(filter, command);
+
+            return updated.wasAcknowledged();
+        } catch (MongoClientException e){
+            logger.atError().log("Error at MongoClient creation on MongoDAO.INSTANCE.deleteGardenShop()", e);
+            return false;
+        }
     }
 
     @Override
@@ -242,7 +255,7 @@ public enum MongoDAO implements DAO {
                 return 2;
             }
         } catch (MongoClientException e){
-            logger.atError().log("Error at MongoClient creation on MongoDAO.INSTANCE.deleteStock()", e);
+            logger.atError().log("Error at MongoClient creation on MongoDAO.INSTANCE.deleteSingleStock()", e);
             return 2;
         }
     }
