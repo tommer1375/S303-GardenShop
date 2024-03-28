@@ -13,11 +13,12 @@ import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientException;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.*;
+import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.InsertOneOptions;
-import com.mongodb.client.model.Projections;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,8 +41,7 @@ public enum MongoDAO implements DAO {
                 .applyConnectionString(connectionString)
                 .build();
 
-        logger.atInfo().log("Connection made without any errors for connection string:\n"
-                    + MongoConfig.getConnectionString());
+        logger.atWarn().setMessage("Successfully logged into the server.").log();
     }
 
     //    Create methods implemented
@@ -138,8 +138,9 @@ public enum MongoDAO implements DAO {
         try(MongoClient mongoClient = MongoClients.create(mongoClientSettings)){
             MongoDatabase mongoDatabase = mongoClient.getDatabase(MongoConfig.DATABASE);
             MongoCollection<Document> stores = mongoDatabase.getCollection(MongoConfig.Collections.STORES.name().toLowerCase());
+            Bson filter = Filters.eq("status", "Active");
 
-            return stores.find()
+            return stores.find(filter)
                     .map(GardenShopManager::createGardenShopFromDocument)
                     .into(new ArrayList<>());
         } catch (MongoClientException e){
@@ -223,8 +224,9 @@ public enum MongoDAO implements DAO {
             MongoDatabase mongoDatabase = mongoClient.getDatabase(MongoConfig.DATABASE);
             MongoCollection<Document> stores = mongoDatabase.getCollection(MongoConfig.Collections.STORES.name().toLowerCase());
 
-            Document filter = new Document("_id", store_id);
-            Document command = new Document("$set", new Document("status", "Inactive"));
+            Document filter = new Document("_id", new ObjectId(store_id));
+            Document update = new Document("status", "Inactive");
+            Document command = new Document("$set", update);
 
             UpdateResult updated = stores.updateOne(filter, command);
 

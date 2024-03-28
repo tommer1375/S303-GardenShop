@@ -2,7 +2,12 @@ package Generic;
 
 import Generic.ConnectType;
 import Generic.Utilities.Input;
+import Mongo.Logging.LoggingInitializer;
 import Mongo.Managers.Stores.GardenShopManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.net.URL;
 
 public class Helper {
     @SuppressWarnings("SameParameterValue")
@@ -14,14 +19,14 @@ public class Helper {
         }
     }
     private static void connectToMongo(){
-        while(true){
+        while (true) {
             switch (Input.readInt("""
                     Welcome to our GardenShopManager™! Choose your option:
                     1. Create Garden Shop.
                     2. See Currently Active Garden Shops.
                     3. Enter a Garden Shop's internal management systems.
                     4. Exit.
-                    """)){
+                    """)) {
                 case 1:
                     GardenShopManager.createGardenShop();
                     break;
@@ -39,6 +44,7 @@ public class Helper {
             }
         }
     }
+
     private static void connectToMySQL(){
 
     }

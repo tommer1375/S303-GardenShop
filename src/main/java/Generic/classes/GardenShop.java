@@ -23,10 +23,10 @@ public class GardenShop {
     @Override
     public String toString() {
         return "\n- Store_id: " + this._id
-                + "\n\t- Name: " + this.name
-                + this.stockList.stream().map(Stock::toString).collect(Collectors.joining("", "\n\tCurrent Stock: ", ""))
-                + "\n\t- Current Stock Value: " + this.currentStockValue + "€"
-                + "\n\t- Current Sales Value: " + this.currentSalesValue + "€";
+                + "\n\t-Name: " + this.name
+                + this.stockList.stream().map(Stock::toString).collect(Collectors.joining("", "\n\t-Current Stock: ", ""))
+                + "\n\t-Current Stock Value: " + this.currentStockValue + "€"
+                + "\n\t-Current Sales Value: " + this.currentSalesValue + "€";
     }
     @SuppressWarnings("FieldCanBeLocal")
     public static class Builder{

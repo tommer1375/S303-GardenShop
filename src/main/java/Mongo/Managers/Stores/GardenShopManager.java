@@ -38,7 +38,6 @@ public class GardenShopManager {
                 .build();
     }
     public static void readActiveGardenShops(){
-//        Reading of data from database
         List<GardenShop> activeGardenShops = MongoDAO.INSTANCE.readGardenShops();
         if(activeGardenShops == null){
             return;

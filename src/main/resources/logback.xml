@@ -2,39 +2,34 @@
 <!--    Appenders-->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n%n</pattern>
+            <pattern>%d{HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n%n</pattern>
         </encoder>
     </appender>
-    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-        <file>src/main/java/Mongo/logs/TestingLogs</file>
-        <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n%n</pattern>
+    <appender name="CUSTOM_MONGO_APPENDER" class="Mongo.Logging.Mongo_Appender">
+    <uri>mongodb://localhost:27017</uri>
+        <databaseName>"gardenShop"</databaseName>
+        <collectionName>"logs"</collectionName>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d{HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n%n</pattern>
         </encoder>
     </appender>
-    <appender name="FILE_MONGO" class="ch.qos.logback.core.FileAppender">
-        <file>src/main/java/Mongo/logs/MongoLogs</file>
-        <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n%n</pattern>
-        </encoder>
-    </appender>
-    <appender name="MONGODB" class="net.logstash.logback.appender.LoggingEventAsyncDisruptorAppender">
+    <appender name="LOGSTASH_MONGO_APPENDER" class="net.logstash.logback.appender.LoggingEventAsyncDisruptorAppender" debug="true">
         <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
         <destinationType>collectionName</destinationType>
         <collectionName>logs</collectionName>
-        <uri>mongodb://localhost:27017/your_database_name</uri>
+        <uri>mongodb://it-academy-access:fneH5P95Yqmfnm@localhost:27017/gardenShop</uri>
     </appender>
 
 <!--    Root level-->
     <root level="INFO">
-        <appender-ref ref="CONSOLE" />
-        <appender-ref ref="FILE" />
-        <appender-ref ref="MONGODB" />
+        <appender-ref ref="CUSTOM_MONGO_APPENDER" />
     </root>
 
 <!--    Loggers-->
+    <logger name="Mongo.Connectivity.MongoDAO" level="WARN" additivity="false">
+        <appender-ref ref="CUSTOM_MONGO_APPENDER" />
+    </logger>
     <logger name="org.mongodb.driver" level="ERROR" additivity="false">
-        <appender-ref ref="CONSOLE" />
-        <appender-ref ref="FILE_MONGO" />
-        <appender-ref ref="MONGODB" />
+        <appender-ref ref="LOGSTASH_MONGO_APPENDER" />
     </logger>
 </configuration>
