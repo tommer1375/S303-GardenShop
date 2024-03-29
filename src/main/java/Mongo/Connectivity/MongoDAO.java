@@ -5,7 +5,6 @@ import Generic.classes.GardenShop;
 import Generic.classes.Products;
 import Generic.classes.Stock;
 import Generic.classes.Tickets;
-import Mongo.Managers.MongoUtilities;
 import Mongo.Managers.Stores.GardenShopManager;
 import Mongo.Managers.Stores.stock.StockManager;
 import Mongo.Managers.Tickets.TicketManager;
@@ -16,6 +15,7 @@ import com.mongodb.client.*;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.InsertOneOptions;
 import com.mongodb.client.result.DeleteResult;
+import com.mongodb.client.result.InsertOneResult;
 import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -41,7 +41,7 @@ public enum MongoDAO implements DAO {
                 .applyConnectionString(connectionString)
                 .build();
 
-        logger.atWarn().setMessage("Successfully logged into the server.").log();
+        logger.atInfo().setMessage("Successfully logged into the server.").log();
     }
 
     //    Create methods implemented
@@ -65,8 +65,12 @@ public enum MongoDAO implements DAO {
             InsertOneOptions options = new InsertOneOptions()
                     .bypassDocumentValidation(false);
 
-            stores.insertOne(gardenShop, options);
-            logger.atInfo().log("Garden Shop Properly Created:\n" + MongoUtilities.extractDocumentDescription(gardenShop));
+            InsertOneResult result = stores.insertOne(gardenShop, options);
+            if(result.wasAcknowledged()){
+                System.out.println("Garden Shop Properly Created:" + GardenShopManager.createGardenShopFromDocument(gardenShop).toString());
+            } else {
+                logger.atError().log("Couldn't create garden shop, check MongoDB configuration.");
+            }
         } catch (MongoClientException e){
             logger.atError().log("Error at MongoClient creation on MongoDAO.INSTANCE.createGardenShop()", e);
             System.exit(0);
@@ -78,8 +82,8 @@ public enum MongoDAO implements DAO {
             MongoDatabase mongoDatabase = mongoClient.getDatabase(MongoConfig.DATABASE);
             MongoCollection<Document> stores = mongoDatabase.getCollection(MongoConfig.Collections.STORES.name().toLowerCase());
 
-            Document filter = new Document("_id", store_id);
-            Document command = new Document("stock", newStockList);
+            Document filter = new Document("_id", new ObjectId(store_id));
+            Document command = new Document("$set", new Document("stock", newStockList));
 
             stores.updateOne(filter, command);
 
@@ -92,13 +96,13 @@ public enum MongoDAO implements DAO {
             MongoDatabase mongoDatabase = mongoClient.getDatabase(MongoConfig.DATABASE);
             MongoCollection<Document> stores = mongoDatabase.getCollection(MongoConfig.Collections.STORES.name().toLowerCase());
 
-            Document filter = new Document("_id", store_id)
+            Document filter = new Document("_id", new ObjectId(store_id))
                     .append("stock.product_id", new ObjectId(stock.getProduct_id()));
 
             if(stores.countDocuments(filter) > 0){
                 return 0;
             } else {
-                filter = new Document("_id", store_id);
+                filter = new Document("_id", new ObjectId(store_id));
                 Document command = new Document("$push", new Document("stock", stock.getStockDocument()));
 
                 stores.updateOne(filter, command);
@@ -181,7 +185,7 @@ public enum MongoDAO implements DAO {
             MongoDatabase mongoDatabase = mongoClient.getDatabase(MongoConfig.DATABASE);
             MongoCollection<Document> tickets = mongoDatabase.getCollection(MongoConfig.Collections.TICKETS.name().toLowerCase());
 
-            Document filter = new Document("_id", new ObjectId(store_id));
+            Document filter = new Document("store_id", new ObjectId(store_id));
 
             return tickets.find()
                     .filter(filter)
@@ -201,10 +205,11 @@ public enum MongoDAO implements DAO {
             MongoDatabase mongoDatabase = mongoClient.getDatabase(MongoConfig.DATABASE);
             MongoCollection<Document> stores = mongoDatabase.getCollection(MongoConfig.Collections.STORES.name().toLowerCase());
 
-            Document filter = new Document("_id", store_id)
+            Document filter = new Document("_id", new ObjectId(store_id))
                     .append("stock.product_id", update.getProduct_id());
+            Document command = new Document("$set", update.getStockDocument());
 
-            UpdateResult updated = stores.updateOne(filter, update.getStockDocument());
+            UpdateResult updated = stores.updateOne(filter, command);
 
             if(updated.wasAcknowledged()){
                 return 1;
@@ -214,6 +219,32 @@ public enum MongoDAO implements DAO {
         } catch (MongoClientException e){
             logger.atError().log("Error at MongoClient creation on MongoDAO.INSTANCE.updateStock()", e);
             return 0;
+        }
+    }
+    public void updateCurrentStockValue(String store_id, double newStockValue){
+        try(MongoClient mongoClient = MongoClients.create(mongoClientSettings)){
+            MongoDatabase mongoDatabase = mongoClient.getDatabase(MongoConfig.DATABASE);
+            MongoCollection<Document> stores = mongoDatabase.getCollection(MongoConfig.Collections.STORES.name().toLowerCase());
+
+            Document filter = new Document("_id", new ObjectId(store_id));
+            Document command = new Document("$set", new Document("current_stock_value", newStockValue));
+
+            stores.updateOne(filter, command);
+        } catch (MongoClientException e){
+            logger.atError().log("Error at MongoClient creation on MongoDAO.INSTANCE.updateCurrentStockValue()", e);
+        }
+    }
+    public void updateCurrentSalesValue(String store_id, double newSalesValue){
+        try(MongoClient mongoClient = MongoClients.create(mongoClientSettings)){
+            MongoDatabase mongoDatabase = mongoClient.getDatabase(MongoConfig.DATABASE);
+            MongoCollection<Document> stores = mongoDatabase.getCollection(MongoConfig.Collections.STORES.name().toLowerCase());
+
+            Document filter = new Document("_id", new ObjectId(store_id));
+            Document command = new Document("$set", new Document("current_sales_value", newSalesValue));
+
+            stores.updateOne(filter, command);
+        } catch (MongoClientException e){
+            logger.atError().log("Error at MongoClient creation on MongoDAO.INSTANCE.updateCurrentSalesValue()", e);
         }
     }
 
@@ -243,7 +274,7 @@ public enum MongoDAO implements DAO {
             MongoDatabase mongoDatabase = mongoClient.getDatabase(MongoConfig.DATABASE);
             MongoCollection<Document> stores = mongoDatabase.getCollection(MongoConfig.Collections.STORES.name().toLowerCase());
 
-            Document filter = new Document("_id", store_id)
+            Document filter = new Document("_id", new ObjectId(store_id))
                     .append("stock.product_id", stock_id);
 
             if(stores.countDocuments(filter) == 0){

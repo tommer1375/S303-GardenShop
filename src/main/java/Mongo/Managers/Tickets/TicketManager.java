@@ -20,7 +20,7 @@ public class TicketManager {
         MongoDAO.INSTANCE.createTicket(EnteredGardenShop.INSTANCE.get_id(), productsList, total);
     }
     public static Tickets createTicketFromDocument(Document document){
-        List<Products> productsList = document.getList("", Document.class).stream()
+        List<Products> productsList = document.getList("products", Document.class).stream()
                 .map(ProductManager::createProductFromDocument)
                 .toList();
 

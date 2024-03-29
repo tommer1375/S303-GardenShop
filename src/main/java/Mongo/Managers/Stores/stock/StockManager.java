@@ -96,6 +96,10 @@ public class StockManager {
                 .build();
     }
     public static void readStock(){
+        if(EnteredGardenShop.INSTANCE.isStockListEmpty()){
+            System.out.println("Stock empty.");
+            return;
+        }
         switch (Input.readInt("""
                 How would you like to see the stock:
                 1. In full.

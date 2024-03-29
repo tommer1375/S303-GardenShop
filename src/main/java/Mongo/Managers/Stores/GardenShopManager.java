@@ -8,20 +8,25 @@ import Mongo.Managers.Stores.stock.StockManager;
 import Mongo.Managers.MongoUtilities;
 import Mongo.Managers.Tickets.TicketManager;
 import org.bson.Document;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class GardenShopManager {
+    private static final Logger logger = LoggerFactory.getLogger(GardenShopManager.class);
     public static void createGardenShop(){
         String name = Input.readString("Introduce the name of the Garden Shop you'd like to create.");
 
-        ArrayList<Stock> stock = StockManager.createShopStock();
+        ArrayList<Stock> stocks = StockManager.createShopStock();
 
-        double currentStockValue = MongoUtilities.getCurrentStockValue(stock);
+        double currentStockValue = stocks.stream()
+                .mapToDouble(stock -> stock.getPrice() * stock.getQuantity())
+                .sum();;
 
-        MongoDAO.INSTANCE.createGardenShop(name, stock, currentStockValue);
+        MongoDAO.INSTANCE.createGardenShop(name, stocks, currentStockValue);
     }
     public static GardenShop createGardenShopFromDocument(Document document){
         String product_id = document.getObjectId("_id").toString();
@@ -30,7 +35,7 @@ public class GardenShopManager {
                 .toList();
 
         return new GardenShop.Builder()
-                ._id(document.getObjectId("_id").toString())
+                ._id(product_id)
                 .name(document.getString("name"))
                 .currentStockValue(document.getDouble("current_stock_value"))
                 .currentSalesValue(document.getDouble("current_sales_value"))
@@ -40,9 +45,9 @@ public class GardenShopManager {
     public static void readActiveGardenShops(){
         List<GardenShop> activeGardenShops = MongoDAO.INSTANCE.readGardenShops();
         if(activeGardenShops == null){
+            logger.atError().log("MongoDAO.INSTANCE.readGardenShops() == null, check it.");
             return;
         }
-
 
         String activeGardenShopPrintable;
         if (activeGardenShops.isEmpty()){
@@ -80,7 +85,7 @@ public class GardenShopManager {
                 case 2 -> StockManager.updateStock();
                 case 3 -> TicketManager.readPastTickets();
                 case 4 -> TicketManager.createTicket();
-                case 5 -> EnteredGardenShop.INSTANCE.deleteFromActiveShops();
+                case 5 -> { if (EnteredGardenShop.INSTANCE.deleteFromActiveShops()) return; }
                 default -> System.out.println("Invalid choice.");
             }
         }

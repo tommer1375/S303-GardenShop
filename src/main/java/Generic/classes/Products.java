@@ -1,6 +1,7 @@
 package Generic.classes;
 
 import org.bson.Document;
+import org.bson.types.ObjectId;
 
 public class Products {
     private final String product_id;
@@ -18,7 +19,7 @@ public class Products {
     }
     public Document getProductDocument(){
         return new Document()
-                .append("product_id", this.product_id)
+                .append("product_id", new ObjectId(this.product_id))
                 .append("quantity", this.quantity)
                 .append("total", this.total);
     }

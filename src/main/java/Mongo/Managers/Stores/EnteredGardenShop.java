@@ -46,6 +46,10 @@ public enum EnteredGardenShop {
             case 0 -> System.out.println("At least one matching product in stock, to change one of it's qualities, use the \"Modify item from stock\" option.");
             case 1 -> {
                 stockList.add(stock);
+                this.currentStockValue = stockList.stream().mapToDouble(s -> s.getPrice() * s.getQuantity()).sum();
+
+                MongoDAO.INSTANCE.updateCurrentStockValue(this._id, this.currentStockValue);
+
                 System.out.println("Stock added: " + stock);
             }
             case 2 -> System.out.println("Failed to update matching product in stock, check for connection errors.");
@@ -83,22 +87,26 @@ public enum EnteredGardenShop {
     public void updateFullStock(){
         MongoDAO.INSTANCE.deleteFullStock(this._id);
 
-        ArrayList<Stock> newStockList = StockManager.createShopStock();
+        this.stockList = StockManager.createShopStock();
+        this.currentStockValue = stockList.stream().mapToDouble(s -> s.getPrice() * s.getQuantity()).sum();
 
-        this.stockList = newStockList;
-        MongoDAO.INSTANCE.createStock(this._id, newStockList);
+        MongoDAO.INSTANCE.createStock(this._id, (ArrayList<Stock>) this.stockList);
+        MongoDAO.INSTANCE.updateCurrentStockValue(this._id, this.currentStockValue);
+
         System.out.println("Stock replaced.");
     }
     public void updateItemFromStock(){
+        if(stockList.isEmpty()){
+            System.out.println("No products in stock.");
+            return;
+        }
         String product_id = Input.readString("Introduce the object's product_id.");
-        boolean isFound;
         Stock stock;
 
         for (int i = 0; i < stockList.size(); i++) {
             stock = stockList.get(i);
-            isFound = stock.getProduct_id().equals(product_id);
 
-            if(isFound){
+            if(stock.getProduct_id().equals(product_id)){
                 Stock updatedStock = StockManager.updateStockDocument(stock);
 
                 int result = MongoDAO.INSTANCE.updateStock(this._id, updatedStock);
@@ -107,6 +115,9 @@ public enum EnteredGardenShop {
                     case 0 -> System.out.println("No matching product in stock, make sure the object_id is properly copied.");
                     case 1 -> {
                         stockList.set(i, updatedStock);
+                        this.currentStockValue = stockList.stream().mapToDouble(s -> s.getPrice() * s.getQuantity()).sum();
+                        MongoDAO.INSTANCE.updateCurrentStockValue(this._id, this.currentStockValue);
+
                         System.out.println(stock
                                 + "\nChanged to:"
                                 + updatedStock);
@@ -115,10 +126,39 @@ public enum EnteredGardenShop {
                 }
                 return;
             }
+            System.out.println("No matching product in stock, make sure the object_id is properly copied.");
+        }
+    }
+    public void updateItemFromStockForTicketCreation(Stock updatedStock){
+        for(Stock stock : stockList){
+            if(stock.getProduct_id().equals(updatedStock.getProduct_id())){
+                stock.setQuantity(updatedStock.getQuantity());
+
+                int result = MongoDAO.INSTANCE.updateStock(this._id, stock);
+
+                switch (result){
+                    case 0 -> System.out.println("No matching product in stock, make sure the object_id is properly copied.");
+                    case 1 -> {
+                        this.currentSalesValue += this.currentStockValue - stockList.stream()
+                                .mapToDouble(s -> s.getPrice() * s.getQuantity())
+                                .sum();
+                        this.currentStockValue = stockList.stream()
+                                .mapToDouble(s -> s.getPrice() * s.getQuantity())
+                                .sum();
+                        MongoDAO.INSTANCE.updateCurrentStockValue(this._id, this.currentStockValue);
+                        MongoDAO.INSTANCE.updateCurrentSalesValue(this._id, this.currentSalesValue);
+                    }
+                    case 2 -> System.out.println("Failed to update matching product in stock, check for connection errors.");
+                }
+            }
         }
     }
 
     public void deleteItemFromStock(){
+        if(stockList.isEmpty()){
+            System.out.println("No products in stock to eliminate.");
+            return;
+        }
         String product_id = Input.readString("Introduce the object's product_id.");
         boolean isFound;
         Stock stock;
@@ -134,6 +174,9 @@ public enum EnteredGardenShop {
                     case 0 -> System.out.println("No matching product in stock, make sure the object_id is properly copied.");
                     case 1 -> {
                         stockList.remove(stock);
+                        this.currentStockValue = stockList.stream().mapToDouble(s -> s.getPrice() * s.getQuantity()).sum();
+
+                        MongoDAO.INSTANCE.updateCurrentStockValue(this._id, this.currentStockValue);
                         System.out.println("Stock item deleted: " + stock);
                     }
                     case 2 -> System.out.println("Failed to update matching product in stock, check for connection errors.");
@@ -142,22 +185,27 @@ public enum EnteredGardenShop {
             }
         }
     }
-    public void deleteFromActiveShops(){
+    public boolean deleteFromActiveShops(){
         if(MongoDAO.INSTANCE.deleteGardenShop(this._id)){
             System.out.println("Store properly deleted.");
+            return true;
         } else {
             System.out.println("Failed to declare bankruptcy, check for connection errors.");
+            return false;
         }
     }
 
     public String get_id() {
         return _id;
     }
-    public Stock getMatchingStockID(String product_id){
-        return stockList.stream()
+    public Stock getMatchingStock(String product_id){
+        return this.stockList.stream()
                 .filter(stock -> stock.getProduct_id().equals(product_id))
                 .findFirst()
                 .orElse(null);
+    }
+    public boolean isStockListEmpty(){
+        return stockList.isEmpty();
     }
 
     @Override
