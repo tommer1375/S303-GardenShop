@@ -35,7 +35,8 @@ public enum MongoDAO implements DAO {
     private final MongoClientSettings mongoClientSettings;
 
     MongoDAO(){
-        ConnectionString connectionString = new ConnectionString(MongoConfig.getConnectionString());
+        String conectionString = (MongoConfig.createDatabaseAndUserIfNotExist()) ? MongoConfig.getConnectionString() : MongoConfig.getSimpleConnectionString();
+        ConnectionString connectionString = new ConnectionString(conectionString);
 
         mongoClientSettings = MongoClientSettings.builder()
                 .applyConnectionString(connectionString)

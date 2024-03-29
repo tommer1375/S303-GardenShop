@@ -30,6 +30,6 @@
         <appender-ref ref="CUSTOM_MONGO_APPENDER" />
     </logger>
     <logger name="org.mongodb.driver" level="ERROR" additivity="false">
-        <appender-ref ref="LOGSTASH_MONGO_APPENDER" />
+        <appender-ref ref="CUSTOM_MONGO_APPENDER" />
     </logger>
 </configuration>
