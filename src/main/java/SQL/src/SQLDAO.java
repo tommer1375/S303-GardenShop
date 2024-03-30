@@ -238,7 +238,7 @@ public class SQLDAO  {
             }
         }
 
-        public static void cratePurchase (Connection connection,int idtickets, int idproduct, int quantity, double total){
+        public static void createPurchase (Connection connection,int idtickets, int idproduct, int quantity, double total){
 
             String insertPurchase = "INSERT INTO purchases (idtickets, idproduct, quantity, total) VALUES ('" + idtickets + "', " + idproduct + "," + quantity + ", " + total + ");";
 
@@ -252,7 +252,7 @@ public class SQLDAO  {
             }
         }
 
-        public static void crateTicket (Connection connection, int idstore){
+        public static void createTicket (Connection connection, int idstore){
 
             String insertTicket = "INSERT INTO tickets (idstore) VALUES (?)";
             Statement st;
