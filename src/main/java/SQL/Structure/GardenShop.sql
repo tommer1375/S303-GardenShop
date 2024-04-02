@@ -32,6 +32,7 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `Garden_shop`.`products` (
   `idproducts` INT NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(45) NOT NULL,
   `type` INT NOT NULL COMMENT '0 = Tree\n1 = Flower\n2 = Decor',
   `price` DOUBLE NOT NULL,
   `height` DOUBLE NULL,
