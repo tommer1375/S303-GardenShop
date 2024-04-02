@@ -46,6 +46,80 @@ public class Helper {
     }
 
     private static void connectToMySQL(){
+        private static Florist florist;
+    private static final List<Ticket> salesHistory = new ArrayList<>();
+Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter the name of the florist: ");
+        String floristName = scanner.nextLine();
+        florist = new Florist(floristName);
 
+        while (true) {
+        	System.out.println("\nFlorist Management Menu:");
+            System.out.println("1 - Add Tree");
+            System.out.println("2 - Add Flower");
+            System.out.println("3 - Add Decoration");
+            System.out.println("4 - View Stock");
+            System.out.println("5 - Remove Tree");
+            System.out.println("6 - Remove Flower");
+            System.out.println("7 - Remove Decoration");
+            System.out.println("8 - Create Sale Ticket");
+            System.out.println("9 - View Sales History");
+            System.out.println("10 - View Total Earnings");
+            System.out.println("11.View stock with quantities");
+            System.out.println("12. View total stock values ");
+           
+            System.out.println("13 - Exit");
+            System.out.print("Enter your choice: ");
+
+            int choice = scanner.nextInt();
+            scanner.nextLine(); 
+
+            switch (choice) {
+                case 1:
+                    addTree(scanner);
+                    break;
+                case 2:
+                    addFlower(scanner);
+                    break;
+                case 3:
+                    addDecoration(scanner);
+                    break;
+                case 4:
+                    florist.displayStock();
+                    break;
+                case 5:
+                    removeTree(scanner);
+                    break;
+                case 6:
+                    removeFlower(scanner);
+                    break;
+                case 7:
+                    removeDecoration(scanner);
+                    break; 
+                case 8:
+                    createSaleTicket(scanner);
+                    break;
+                case 9:
+                    viewSalesHistory();
+                    break;
+                case 10:
+                    viewTotalEarnings();
+                    scanner.close();
+                    return;
+                case 11:  
+                florist.printStockWithQuantities();
+                    break;
+                case 12:
+                    System.out.println("Total stock value: "
+                    		 + florist.calculateTotalStockValue());
+                    break;
+                case 13:
+                    System.out.println("Exiting program.");
+                    scanner.close();
+                    return;
+                default:
+                    System.out.println("Invalid choice. Please enter a number between 1 and 13.");
+            }
+        }
     }
 }
