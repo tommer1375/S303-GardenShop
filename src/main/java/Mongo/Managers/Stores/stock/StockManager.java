@@ -1,7 +1,7 @@
 package Mongo.Managers.Stores.stock;
 
 import Generic.Utilities.Input;
-import Generic.classes.Stock;
+import Mongo.Connectivity.classes.Stock;
 import Mongo.Managers.MongoUtilities;
 import Mongo.Managers.Stores.EnteredGardenShop;
 import Mongo.Managers.Stores.stock.qualities.*;

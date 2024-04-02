@@ -10,7 +10,7 @@ import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
 
 import java.util.Date;
-
+@SuppressWarnings({"FieldMayBeFinal", "FieldCanBeLocal"})
 public class Mongo_Appender extends UnsynchronizedAppenderBase<ILoggingEvent> {
     private String uri = MongoConfig.getConnectionString();
     private String databaseName = MongoConfig.DATABASE;

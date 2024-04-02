@@ -1,8 +1,8 @@
 package Mongo.Managers.Tickets.Products;
 
 import Generic.Utilities.Input;
-import Generic.classes.Products;
-import Generic.classes.Stock;
+import Mongo.Connectivity.classes.Products;
+import Mongo.Connectivity.classes.Stock;
 import Mongo.Managers.Stores.EnteredGardenShop;
 import org.bson.Document;
 

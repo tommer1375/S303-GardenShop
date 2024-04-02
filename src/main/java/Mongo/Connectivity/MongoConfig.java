@@ -16,7 +16,7 @@ public class MongoConfig {
     private static final String PORT = "27017";
     private static final boolean IS_AUTH_APPLIED = false;
     private static final String AUTHMECHANISM = "SCRAM-SHA-256";
-    public static final String DATABASE = "TestGardenShop";
+    public static final String DATABASE = "gardenShop";
     public enum Collections{
         STORES,
         TICKETS,
@@ -40,7 +40,7 @@ public class MongoConfig {
             MongoIterable<String> databaseNames = mongoClient.listDatabaseNames();
             for (String databaseName : databaseNames) {
                 if (databaseName.equals(DATABASE)) {
-                    return false;
+                    return true;
                 }
             }
 

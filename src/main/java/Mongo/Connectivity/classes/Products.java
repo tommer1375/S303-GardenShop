@@ -1,4 +1,4 @@
-package Generic.classes;
+package Mongo.Connectivity.classes;
 
 import org.bson.Document;
 import org.bson.types.ObjectId;

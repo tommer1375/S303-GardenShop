@@ -1,10 +1,10 @@
 package Mongo.Connectivity;
 
 import Generic.DAO;
-import Generic.classes.GardenShop;
-import Generic.classes.Products;
-import Generic.classes.Stock;
-import Generic.classes.Tickets;
+import Mongo.Connectivity.classes.GardenShop;
+import Mongo.Connectivity.classes.Products;
+import Mongo.Connectivity.classes.Stock;
+import Mongo.Connectivity.classes.Tickets;
 import Mongo.Managers.Stores.GardenShopManager;
 import Mongo.Managers.Stores.stock.StockManager;
 import Mongo.Managers.Tickets.TicketManager;

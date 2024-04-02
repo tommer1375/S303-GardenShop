@@ -1,4 +1,4 @@
-package Generic.classes;
+package Mongo.Connectivity.classes;
 
 import java.util.List;
 import java.util.stream.Collectors;

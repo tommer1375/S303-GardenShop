@@ -1,7 +1,7 @@
 package Mongo.Managers.Tickets;
 
-import Generic.classes.Products;
-import Generic.classes.Tickets;
+import Mongo.Connectivity.classes.Products;
+import Mongo.Connectivity.classes.Tickets;
 import Mongo.Connectivity.MongoDAO;
 import Mongo.Managers.Stores.EnteredGardenShop;
 import Mongo.Managers.Tickets.Products.ProductManager;

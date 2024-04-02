@@ -1,4 +1,4 @@
-package Generic.classes;
+package Mongo.Connectivity.classes;
 
 import Mongo.Managers.Stores.stock.qualities.Quality;
 import Mongo.Managers.Stores.stock.qualities.Types;

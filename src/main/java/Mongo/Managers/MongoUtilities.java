@@ -1,16 +1,11 @@
 package Mongo.Managers;
 
 import Generic.Utilities.Input;
-import Generic.classes.Stock;
 import Mongo.Connectivity.MongoDAO;
 import Mongo.Managers.Stores.EnteredGardenShop;
 import Mongo.Managers.Stores.stock.qualities.*;
 import Mongo.Managers.Stores.stock.qualities.Error;
 import org.bson.Document;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 public class MongoUtilities {
     public static boolean enterGardenShop(String name){

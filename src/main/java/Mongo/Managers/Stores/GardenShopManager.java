@@ -1,8 +1,8 @@
 package Mongo.Managers.Stores;
 
 import Generic.Utilities.Input;
-import Generic.classes.GardenShop;
-import Generic.classes.Stock;
+import Mongo.Connectivity.classes.GardenShop;
+import Mongo.Connectivity.classes.Stock;
 import Mongo.Connectivity.MongoDAO;
 import Mongo.Managers.Stores.stock.StockManager;
 import Mongo.Managers.MongoUtilities;

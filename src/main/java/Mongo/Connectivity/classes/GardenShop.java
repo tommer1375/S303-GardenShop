@@ -1,8 +1,5 @@
-package Generic.classes;
+package Mongo.Connectivity.classes;
 
-import org.bson.Document;
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
