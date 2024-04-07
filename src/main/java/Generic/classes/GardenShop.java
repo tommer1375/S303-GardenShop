@@ -11,7 +11,7 @@ public class GardenShop {
     private final String name;
     private final double currentStockValue;
     private final double currentSalesValue;
-    private final List<Generic.classes.Stock> stockList;
+    private final List<Stock> stockList;
 
     public GardenShop(Builder builder){
         this._id = builder._id;

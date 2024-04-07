@@ -3,7 +3,8 @@ package Generic.classes.qualities;
 public enum Error implements Quality {
     TREE,
     FLOWER,
-    DECORATION;
+    DECORATION,
+    ERROR;
 
     @Override
     public String getName() {

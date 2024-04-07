@@ -167,7 +167,7 @@ public enum MySQLDAO implements DAO {
             ticketStatement.executeUpdate();
 
             int ticketId;
-            try (java.sql.ResultSet generatedKeys = ticketStatement.getGeneratedKeys()) {
+            try (ResultSet generatedKeys = ticketStatement.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
                     ticketId = generatedKeys.getInt(1);
                 } else {
@@ -267,7 +267,7 @@ public enum MySQLDAO implements DAO {
             while (resultSet.next()) {
 
                 String product_id = resultSet.getString("idproduct");
-                Generic.classes.qualities.Types type = switch (resultSet.getInt("type")) {
+                Types type = switch (resultSet.getInt("type")) {
                     case 0 -> Types.TREE;
                     case 1 -> Types.FLOWER;
                     case 2 -> Types.DECORATION;
