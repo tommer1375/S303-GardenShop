@@ -1,5 +1,7 @@
 package Mongo.Managers.Stores;
 
+import Generic.Utilities.ConnectType;
+import Generic.Managers.Stores.GardenShopManager;
 import org.junit.jupiter.api.*;
 
 import java.io.ByteArrayOutputStream;
@@ -23,7 +25,7 @@ class GardenShopManagerTest {
     @Test
     @Disabled
     void readActiveGardenShops() {
-        GardenShopManager.readActiveGardenShops();
+        GardenShopManager.readActiveGardenShops(ConnectType.MONGO);
 
         assertEquals("""
                 Current Active Garden Shops:

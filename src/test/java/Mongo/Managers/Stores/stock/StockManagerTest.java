@@ -1,7 +1,8 @@
 package Mongo.Managers.Stores.stock;
 
-import Mongo.Managers.MongoUtilities;
-import Mongo.Managers.Stores.EnteredGardenShop;
+import Generic.Utilities.ConnectType;
+import Generic.Managers.Utilities;
+import Generic.Managers.Stores.stock.StockManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,7 +16,7 @@ class StockManagerTest {
     private final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
     @BeforeEach
     public void enterGardenShopAndCreateCaptor(){
-        MongoUtilities.enterGardenShop("Test1");
+        Utilities.enterGardenShop("Test1", ConnectType.MONGO);
         System.setOut(new PrintStream(outputStream));
     }
     @AfterEach

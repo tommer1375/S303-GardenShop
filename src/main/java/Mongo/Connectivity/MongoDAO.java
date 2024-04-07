@@ -1,13 +1,13 @@
 package Mongo.Connectivity;
 
 import Generic.DAO;
-import Mongo.Connectivity.classes.GardenShop;
-import Mongo.Connectivity.classes.Products;
-import Mongo.Connectivity.classes.Stock;
-import Mongo.Connectivity.classes.Tickets;
-import Mongo.Managers.Stores.GardenShopManager;
-import Mongo.Managers.Stores.stock.StockManager;
-import Mongo.Managers.Tickets.TicketManager;
+import Generic.classes.GardenShop;
+import Generic.classes.Products;
+import Generic.classes.Stock;
+import Generic.classes.Tickets;
+import Generic.Managers.Stores.GardenShopManager;
+import Generic.Managers.Stores.stock.StockManager;
+import Generic.Managers.Tickets.TicketManager;
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientException;
 import com.mongodb.MongoClientSettings;
@@ -92,23 +92,18 @@ public enum MongoDAO implements DAO {
             logger.atError().log("Error at MongoClient creation on MongoDAO.INSTANCE.createStock()", e);
         }
     }
+    @Override
     public int createSingleStock(String store_id, Stock stock){
         try(MongoClient mongoClient = MongoClients.create(mongoClientSettings)){
             MongoDatabase mongoDatabase = mongoClient.getDatabase(MongoConfig.DATABASE);
             MongoCollection<Document> stores = mongoDatabase.getCollection(MongoConfig.Collections.STORES.name().toLowerCase());
 
-            Document filter = new Document("_id", new ObjectId(store_id))
-                    .append("stock.product_id", new ObjectId(stock.getProduct_id()));
+            Document filter = new Document("_id", new ObjectId(store_id));
+            Document command = new Document("$push", new Document("stock", stock.getStockDocument()));
 
-            if(stores.countDocuments(filter) > 0){
-                return 0;
-            } else {
-                filter = new Document("_id", new ObjectId(store_id));
-                Document command = new Document("$push", new Document("stock", stock.getStockDocument()));
+            stores.updateOne(filter, command);
+            return 1;
 
-                stores.updateOne(filter, command);
-                return 1;
-            }
         } catch (MongoClientException e){
             logger.atError().log("Error at MongoClient creation on MongoDAO.INSTANCE.createSingleStock()", e);
             return 2;
@@ -154,12 +149,16 @@ public enum MongoDAO implements DAO {
         }
     }
     @Override
-    public Document readGardenShop(String name){
+    public GardenShop readGardenShop(String name){
         try(MongoClient mongoClient = MongoClients.create(mongoClientSettings)){
             MongoDatabase mongoDatabase = mongoClient.getDatabase(MongoConfig.DATABASE);
             MongoCollection<Document> stores = mongoDatabase.getCollection(MongoConfig.Collections.STORES.name().toLowerCase());
 
-            return stores.find(new Document("name", name)).first();
+            Document gardenShopDocument = stores.find(new Document("name", name)).first();
+
+            if(gardenShopDocument == null || gardenShopDocument.getString("status").equals("Inactive")){return null;}
+
+            return GardenShopManager.createGardenShopFromDocument(gardenShopDocument);
         } catch (MongoClientException e){
             logger.atError().log("Error at MongoClient creation on MongoDAO.INSTANCE.readGardenShop()", e);
             return null;
@@ -198,8 +197,7 @@ public enum MongoDAO implements DAO {
         }
     }
 
-
-//    Update methods implemented
+    //    Update methods implemented
     @Override
     public int updateStock(String store_id, Stock update) {
         try(MongoClient mongoClient = MongoClients.create(mongoClientSettings)){
@@ -222,6 +220,7 @@ public enum MongoDAO implements DAO {
             return 0;
         }
     }
+    @Override
     public void updateCurrentStockValue(String store_id, double newStockValue){
         try(MongoClient mongoClient = MongoClients.create(mongoClientSettings)){
             MongoDatabase mongoDatabase = mongoClient.getDatabase(MongoConfig.DATABASE);
@@ -235,6 +234,7 @@ public enum MongoDAO implements DAO {
             logger.atError().log("Error at MongoClient creation on MongoDAO.INSTANCE.updateCurrentStockValue()", e);
         }
     }
+    @Override
     public void updateCurrentSalesValue(String store_id, double newSalesValue){
         try(MongoClient mongoClient = MongoClients.create(mongoClientSettings)){
             MongoDatabase mongoDatabase = mongoClient.getDatabase(MongoConfig.DATABASE);
@@ -268,7 +268,6 @@ public enum MongoDAO implements DAO {
             return false;
         }
     }
-
     @Override
     public int deleteSingleStock(String store_id, String stock_id) {
         try(MongoClient mongoClient = MongoClients.create(mongoClientSettings)){
@@ -294,7 +293,6 @@ public enum MongoDAO implements DAO {
             return 2;
         }
     }
-
     @Override
     public void deleteFullStock(String store_id) {
         try(MongoClient mongoClient = MongoClients.create(mongoClientSettings)){

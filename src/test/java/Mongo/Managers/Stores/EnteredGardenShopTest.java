@@ -1,7 +1,8 @@
 package Mongo.Managers.Stores;
 
-import Mongo.Managers.MongoUtilities;
-import Mongo.Managers.Tickets.TicketManager;
+import Generic.Utilities.ConnectType;
+import Generic.Managers.Utilities;
+import Generic.Managers.Stores.EnteredGardenShop;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,7 +16,7 @@ class EnteredGardenShopTest {
     private final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
     @BeforeEach
     public void EnterGardenShopAndCreateCaptor(){
-        MongoUtilities.enterGardenShop("Test2");
+        Utilities.enterGardenShop("Test2", ConnectType.MONGO);
         System.setOut(new PrintStream(outputStream));
     }
     @AfterEach
@@ -31,7 +32,6 @@ class EnteredGardenShopTest {
                 			Price: 1000.0€
                 			Quantity: 15
                 			Height: TALL
-                                
                 		- Product_id: 6606f3e4bc32641f26393323
                 			Type: FLOWER
                 			Price: 25.0€
@@ -82,9 +82,11 @@ class EnteredGardenShopTest {
 
     @Test
     void testToString() {
-        assertEquals("Store_id: 6606f3e4bc32641f26393325"
-                + "\n\tName: Test2"
-                + "\n\tCurrent Stock Value: 17125.0"
-                + "\n\tCurrent Sales Value: 0.0\n", EnteredGardenShop.INSTANCE.toString());
+        assertEquals("""
+                Store_id: 6606f3e4bc32641f26393325
+                \tName: Test2
+                \tCurrent Stock Value: 17125.0
+                \tCurrent Sales Value: 0.0
+                """, EnteredGardenShop.INSTANCE.toString());
     }
 }

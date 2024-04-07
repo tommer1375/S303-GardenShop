@@ -1,23 +1,6 @@
 <configuration>
 <!--    Appenders-->
-    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
-            <pattern>%d{HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n%n</pattern>
-        </encoder>
-    </appender>
-    <appender name="CUSTOM_MONGO_APPENDER" class="Mongo.Logging.Mongo_Appender">
-    <uri>mongodb://localhost:27017</uri>
-        <databaseName>"gardenShop"</databaseName>
-        <collectionName>"logs"</collectionName>
-        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <pattern>%d{HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n%n</pattern>
-        </encoder>
-    </appender>
-    <appender name="LOGSTASH_MONGO_APPENDER" class="net.logstash.logback.appender.LoggingEventAsyncDisruptorAppender" debug="true">
-        <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
-        <destinationType>collectionName</destinationType>
-        <collectionName>logs</collectionName>
-        <uri>mongodb://it-academy-access:fneH5P95Yqmfnm@localhost:27017/gardenShop</uri>
+    <appender name="CUSTOM_MONGO_APPENDER" class="Generic.Logging.Mongo_Appender">
     </appender>
 
 <!--    Root level-->

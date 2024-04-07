@@ -23,3 +23,10 @@ As for the functionalities of the Main, at a minimum, it must include the follow
 - Create purchase tickets with multiple objects.
 - Show a list of old purchases.
 - View the total money earned from all sales.
+
+The members of this project were:
+- [Alallilacias](https://github.com/Alalilacias)
+- [MarineAvramova](https://github.com/MarineAvramova)
+- [Tommer1375](https://github.com/tommer1375)
+
+For the methodology, we divided up the work between ourselves, to adapt to each one's availability.
