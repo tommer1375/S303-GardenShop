@@ -5,11 +5,10 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoIterable;
 import org.bson.Document;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import static org.slf4j.LoggerFactory.getLogger;
 
 public class MongoConfig {
-    private static final Logger logger = LoggerFactory.getLogger(MongoConfig.class);
     private static final String USER = "it-academy-access";
     private static final String PASSWORD = "fneH5P95Yqmfnm";
     private static final String HOST = "localhost";
@@ -56,7 +55,7 @@ public class MongoConfig {
                 return true;
             }
         } catch (MongoClientException e) {
-            logger.atError().log("Error at MongoConfig.createDatabaseAndUserIfNotExist(): " + e.getMessage());
+            getLogger(MongoConfig.class).atError().log("Error at MongoConfig.createDatabaseAndUserIfNotExist(): " + e.getMessage());
             return false;
         }
         return false;

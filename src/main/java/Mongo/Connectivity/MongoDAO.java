@@ -20,18 +20,17 @@ import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 public enum MongoDAO implements DAO {
     INSTANCE;
 
-    private final Logger logger = LoggerFactory.getLogger(MongoDAO.class);
     private final MongoClientSettings mongoClientSettings;
 
     MongoDAO(){
@@ -42,7 +41,7 @@ public enum MongoDAO implements DAO {
                 .applyConnectionString(connectionString)
                 .build();
 
-        logger.atInfo().setMessage("Successfully logged into the server.").log();
+        getLogger(MongoDAO.class).atInfo().setMessage("Successfully logged into the server.").log();
     }
 
     //    Create methods implemented
@@ -70,10 +69,10 @@ public enum MongoDAO implements DAO {
             if(result.wasAcknowledged()){
                 System.out.println("Garden Shop Properly Created:" + GardenShopManager.createGardenShopFromDocument(gardenShop).toString());
             } else {
-                logger.atError().log("Couldn't create garden shop, check MongoDB configuration.");
+                getLogger(MongoDAO.class).atError().log("Couldn't create garden shop, check MongoDB configuration.");
             }
         } catch (MongoClientException e){
-            logger.atError().log("Error at MongoClient creation on MongoDAO.INSTANCE.createGardenShop()", e);
+            getLogger(MongoDAO.class).atError().log("Error at MongoClient creation on MongoDAO.INSTANCE.createGardenShop()", e);
             System.exit(0);
         }
     }
@@ -89,7 +88,7 @@ public enum MongoDAO implements DAO {
             stores.updateOne(filter, command);
 
         } catch (MongoClientException e){
-            logger.atError().log("Error at MongoClient creation on MongoDAO.INSTANCE.createStock()", e);
+            getLogger(MongoDAO.class).atError().log("Error at MongoClient creation on MongoDAO.INSTANCE.createStock()", e);
         }
     }
     @Override
@@ -105,7 +104,7 @@ public enum MongoDAO implements DAO {
             return 1;
 
         } catch (MongoClientException e){
-            logger.atError().log("Error at MongoClient creation on MongoDAO.INSTANCE.createSingleStock()", e);
+            getLogger(MongoDAO.class).atError().log("Error at MongoClient creation on MongoDAO.INSTANCE.createSingleStock()", e);
             return 2;
         }
     }
@@ -128,7 +127,7 @@ public enum MongoDAO implements DAO {
 
             tickets.insertOne(ticket, options);
         } catch (MongoClientException e){
-            logger.atError().log("Error at MongoClient creation on MongoDAO.INSTANCE.createTicket()", e);
+            getLogger(MongoDAO.class).atError().log("Error at MongoClient creation on MongoDAO.INSTANCE.createTicket()", e);
         }
     }
 
@@ -144,7 +143,7 @@ public enum MongoDAO implements DAO {
                     .map(GardenShopManager::createGardenShopFromDocument)
                     .into(new ArrayList<>());
         } catch (MongoClientException e){
-            logger.atError().log("Error at MongoClient creation on MongoDAO.INSTANCE.readGardenShops()", e);
+            getLogger(MongoDAO.class).atError().log("Error at MongoClient creation on MongoDAO.INSTANCE.readGardenShops()", e);
             return null;
         }
     }
@@ -160,7 +159,7 @@ public enum MongoDAO implements DAO {
 
             return GardenShopManager.createGardenShopFromDocument(gardenShopDocument);
         } catch (MongoClientException e){
-            logger.atError().log("Error at MongoClient creation on MongoDAO.INSTANCE.readGardenShop()", e);
+            getLogger(MongoDAO.class).atError().log("Error at MongoClient creation on MongoDAO.INSTANCE.readGardenShop()", e);
             return null;
         }
     }
@@ -175,7 +174,7 @@ public enum MongoDAO implements DAO {
                     .map(StockManager::createStockFromDocument)
                     .collect(Collectors.toList());
         } catch (MongoClientException e){
-            logger.atError().log("Error at MongoClient creation on MongoDAO.INSTANCE.readShopStock()", e);
+            getLogger(MongoDAO.class).atError().log("Error at MongoClient creation on MongoDAO.INSTANCE.readShopStock()", e);
             return null;
         }
     }
@@ -192,7 +191,7 @@ public enum MongoDAO implements DAO {
                     .map(TicketManager::createTicketFromDocument)
                     .into(new ArrayList<>());
         } catch (MongoClientException e){
-            logger.atError().log("Error at MongoClient creation on MongoDAO.INSTANCE.readTicketsFromEnteredStore()", e);
+            getLogger(MongoDAO.class).atError().log("Error at MongoClient creation on MongoDAO.INSTANCE.readTicketsFromEnteredStore()", e);
             return null;
         }
     }
@@ -216,7 +215,7 @@ public enum MongoDAO implements DAO {
                 return 2;
             }
         } catch (MongoClientException e){
-            logger.atError().log("Error at MongoClient creation on MongoDAO.INSTANCE.updateStock()", e);
+            getLogger(MongoDAO.class).atError().log("Error at MongoClient creation on MongoDAO.INSTANCE.updateStock()", e);
             return 0;
         }
     }
@@ -231,7 +230,7 @@ public enum MongoDAO implements DAO {
 
             stores.updateOne(filter, command);
         } catch (MongoClientException e){
-            logger.atError().log("Error at MongoClient creation on MongoDAO.INSTANCE.updateCurrentStockValue()", e);
+            getLogger(MongoDAO.class).atError().log("Error at MongoClient creation on MongoDAO.INSTANCE.updateCurrentStockValue()", e);
         }
     }
     @Override
@@ -245,7 +244,7 @@ public enum MongoDAO implements DAO {
 
             stores.updateOne(filter, command);
         } catch (MongoClientException e){
-            logger.atError().log("Error at MongoClient creation on MongoDAO.INSTANCE.updateCurrentSalesValue()", e);
+            getLogger(MongoDAO.class).atError().log("Error at MongoClient creation on MongoDAO.INSTANCE.updateCurrentSalesValue()", e);
         }
     }
 
@@ -264,7 +263,7 @@ public enum MongoDAO implements DAO {
 
             return updated.wasAcknowledged() && updated.getModifiedCount() > 0;
         } catch (MongoClientException e){
-            logger.atError().log("Error at MongoClient creation on MongoDAO.INSTANCE.deleteGardenShop()", e);
+            getLogger(MongoDAO.class).atError().log("Error at MongoClient creation on MongoDAO.INSTANCE.deleteGardenShop()", e);
             return false;
         }
     }
@@ -289,7 +288,7 @@ public enum MongoDAO implements DAO {
                 return 2;
             }
         } catch (MongoClientException e){
-            logger.atError().log("Error at MongoClient creation on MongoDAO.INSTANCE.deleteSingleStock()", e);
+            getLogger(MongoDAO.class).atError().log("Error at MongoClient creation on MongoDAO.INSTANCE.deleteSingleStock()", e);
             return 2;
         }
     }
@@ -304,7 +303,7 @@ public enum MongoDAO implements DAO {
 
             stores.updateOne(filter, command);
         } catch (MongoClientException e){
-            logger.atError().log("Error at MongoClient creation on MongoDAO.INSTANCE.deleteFullStock()", e);
+            getLogger(MongoDAO.class).atError().log("Error at MongoClient creation on MongoDAO.INSTANCE.deleteFullStock()", e);
         }
     }
 }

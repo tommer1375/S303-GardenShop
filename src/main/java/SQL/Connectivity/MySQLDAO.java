@@ -27,11 +27,12 @@ public enum MySQLDAO implements DAO {
     @Override
     public void createGardenShop(String name, ArrayList<Stock> stockList, double currentStockValue) {
         try (Connection connection = DriverManager.getConnection(JDBC_URL + DB, USER, PASSWORD)) {
-            String sql = "INSERT INTO stores (name, current_stock_value, current_sales_value) VALUES (?, ?, ?)";
+            String sql = "INSERT INTO stores (name, current_stock_value, current_sales_value, status) VALUES (?, ?, ?, ?)";
             PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             statement.setString(1, name);
             statement.setDouble(2, currentStockValue);
             statement.setDouble(3, 0);
+            statement.setInt(4, 0);
             int result = statement.executeUpdate();
 
             if (result == 0) {
@@ -185,6 +186,13 @@ public enum MySQLDAO implements DAO {
                 purchaseStatement.executeUpdate();
             }
 
+            System.out.println(new Tickets.Builder()
+                    ._id(String.valueOf(ticketId))
+                    .store_id(store_id)
+                    .productsList(products)
+                    .total(total)
+                    .build()
+                    .toString());
         } catch (SQLException e) {
             getLogger(MySQLDAO.class).atError().log("SQLException caught at createTicket(), check connection settings" + "\n"
                     + "Error Message: " + e.getMessage() + "\n"
@@ -198,7 +206,7 @@ public enum MySQLDAO implements DAO {
         try (Connection connection = DriverManager.getConnection(JDBC_URL + DB, USER, PASSWORD)) {
             List<GardenShop> gardenShops = new ArrayList<>();
             GardenShop gardenShop;
-            String sql = "SELECT * FROM stores";
+            String sql = "SELECT * FROM stores WHERE status = 0";
             PreparedStatement statement = connection.prepareStatement(sql);
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
@@ -224,7 +232,7 @@ public enum MySQLDAO implements DAO {
     @Override
     public GardenShop readGardenShop(String name) {
         try (Connection connection = DriverManager.getConnection(JDBC_URL + DB, USER, PASSWORD)) {
-            String sql = "SELECT * FROM stores WHERE name = ?";
+            String sql = "SELECT * FROM stores WHERE name = ? AND status = 0";
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setString(1, name);
             try (ResultSet resultSet = statement.executeQuery()) {
@@ -324,17 +332,17 @@ public enum MySQLDAO implements DAO {
                     }
                 }
                 if (ticket == null) {
-                    // If ticket does not exist, create a new one and add to ticketsList
                     ticket = new Tickets.Builder()
                             ._id(ticketId)
                             .store_id(store_id)
+                            .productsList(new ArrayList<>())
                             .total(resultSet.getDouble("total")) // Total for the ticket
                             .build();
                     ticketsList.add(ticket);
                 }
 
                 ticket.getProductsList().add(new Products.Builder()
-                        .product_id(String.valueOf(resultSet.getString("idproduct")))
+                        .product_id(String.valueOf(resultSet.getInt("idproduct")))
                         .quantity(resultSet.getInt("quantity"))
                         .total(resultSet.getDouble("purchase_total"))
                         .build());
@@ -423,10 +431,12 @@ public enum MySQLDAO implements DAO {
     @Override
     public boolean deleteGardenShop(String store_id) {
         try (Connection connection = DriverManager.getConnection(JDBC_URL + DB, USER, PASSWORD)) {
-            PreparedStatement statement = connection.prepareStatement("DELETE FROM stores WHERE idstores = ?");
-            statement.setInt(1, Integer.parseInt(store_id));
-            statement.executeUpdate();
-            return true;
+            PreparedStatement statement = connection.prepareStatement("UPDATE stores SET status = ? WHERE idstores = ?");
+            statement.setInt(1, 1);
+            statement.setInt(2, Integer.parseInt(store_id));
+            int rowsAffected = statement.executeUpdate();
+
+            return rowsAffected > 0;
         } catch (SQLException e) {
             getLogger(MySQLDAO.class).atError().log("SQLException caught at deleteGardenShop(), check connection settings" + "\n"
                     + "Error Message: " + e.getMessage() + "\n"

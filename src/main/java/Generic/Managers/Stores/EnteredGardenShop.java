@@ -277,18 +277,32 @@ public enum EnteredGardenShop {
         }
     }
     public boolean deleteFromActiveShops(){
-        if(MongoDAO.INSTANCE.deleteGardenShop(this._id)){
-            System.out.println("Store properly deleted.");
-            return true;
-        } else {
-            System.out.println("Failed to declare bankruptcy, check for connection errors.");
-            return false;
+        switch (connectType){
+            case MONGO -> {
+                if(MongoDAO.INSTANCE.deleteGardenShop(this._id)){
+                    System.out.println("Store properly deleted.");
+                    return true;
+                } else {
+                    System.out.println("Failed to declare bankruptcy, check for connection errors.");
+                    return false;
+                }
+            }
+            case MySQL -> {
+                if(MySQLDAO.INSTANCE.deleteGardenShop(this._id)){
+                    System.out.println("Store properly deleted.");
+                    return true;
+                } else {
+                    System.out.println("Failed to declare bankruptcy, check for connection errors.");
+                    return false;
+                }
+            }
+            default -> {
+                System.out.println("Failed to declare bankruptcy, check for connection errors.");
+                return false;
+            }
         }
     }
 
-    public String get_id() {
-        return _id;
-    }
     public Stock getMatchingStock(String product_id){
         return this.stockList.stream()
                 .filter(stock -> stock.getProduct_id().equals(product_id))

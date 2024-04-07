@@ -29,7 +29,7 @@ public class Tickets {
     }
     @Override
     public String toString() {
-        return "Ticket " + _id
+        return "\nTicket " + _id
                 + "\n\tStore ID: " + this.store_id
                 + productsListToString()
                 + "\n\tTotal: " + this.total + "€";

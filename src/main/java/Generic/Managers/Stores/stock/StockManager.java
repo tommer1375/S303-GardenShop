@@ -7,8 +7,6 @@ import Generic.classes.Stock;
 import Generic.classes.qualities.*;
 import org.bson.Document;
 import org.bson.types.ObjectId;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -17,7 +15,6 @@ import java.util.ArrayList;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class StockManager {
-    private static final Logger logger = LoggerFactory.getLogger(StockManager.class);
     public static ArrayList<Stock> createShopStock(){
         boolean isStockFilled = Input.readBoolean("Would you like to introduce any stock as of this moment?");
         ArrayList<Stock> stockList;
@@ -84,7 +81,7 @@ public class StockManager {
             case FLOWER -> Color.valueOf(document.getString("Color"));
             case DECORATION -> Material.valueOf(document.getString("Material"));
             default -> {
-                logger.atInfo().log("Incorrect execution of quality assignment at createStockFromDocument() in:\n src/main/java/Mongo/Managers/Stores/stock/StockManager.java");
+                getLogger(StockManager.class).atInfo().log("Incorrect execution of quality assignment at createStockFromDocument() in:\n src/main/java/Mongo/Managers/Stores/stock/StockManager.java");
                 throw new IllegalStateException("Unexpected value: " + type);
             }
         };
@@ -143,6 +140,7 @@ public class StockManager {
     public static void updateStock(){
         switch (Input.readInt(EnteredGardenShop.INSTANCE.readStockInFull() +
                 """
+                
                 What would you like to do with the stock?
                 1. Replace stock (eliminate and create a new one, empty or not).
                 2. Add item to stock.

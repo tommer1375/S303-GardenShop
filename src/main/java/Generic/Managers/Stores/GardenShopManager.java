@@ -10,8 +10,6 @@ import Generic.Managers.Utilities;
 import Generic.Managers.Tickets.TicketManager;
 import SQL.Connectivity.MySQLDAO;
 import org.bson.Document;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -22,7 +20,6 @@ import java.util.stream.Collectors;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class GardenShopManager {
-    private static final Logger logger = LoggerFactory.getLogger(GardenShopManager.class);
     public static void createGardenShop(ConnectType connectType){
         String name = Input.readString("Introduce the name of the Garden Shop you'd like to create.");
 
@@ -77,8 +74,8 @@ public class GardenShopManager {
         };
         if(activeGardenShops == null){
             switch(connectType){
-                case MONGO -> logger.atError().log("MongoDAO.INSTANCE.readGardenShops() == null, check it.");
-                case MySQL -> logger.atError().log("MySQLDAO.INSTANCE.readGardenShops() == null, check it.");
+                case MONGO -> getLogger(GardenShopManager.class).atError().log("MongoDAO.INSTANCE.readGardenShops() == null, check it.");
+                case MySQL -> getLogger(GardenShopManager.class).atError().log("MySQLDAO.INSTANCE.readGardenShops() == null, check it.");
             }
             return;
         }
