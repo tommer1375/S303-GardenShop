@@ -41,11 +41,12 @@ public class Utilities {
                 1. Red.
                 2. Orange
                 3. Yellow.
-                4. Blue.
-                5. Indigo.
-                6. Violet.
-                7. White.
-                8. Pink.
+                4. Green.
+                5. Blue.
+                6. Indigo.
+                7. Violet.
+                8. White.
+                9. Pink.
                 """)){
             case 1 -> Color.RED;
             case 2 -> Color.ORANGE;
