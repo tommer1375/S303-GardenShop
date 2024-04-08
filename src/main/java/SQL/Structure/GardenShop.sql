@@ -91,7 +91,7 @@ CREATE TABLE IF NOT EXISTS `Garden_shop`.`purchases` (
   `idtickets` INT NOT NULL,
   `idproduct` INT NOT NULL,
   `quantity` INT NOT NULL,
-  `total` DOUBLE NOT NULL,
+  `purchase_total` DOUBLE NOT NULL,
   PRIMARY KEY (`idpurchases`),
   INDEX `idtickets_idx` (`idtickets` ASC) VISIBLE,
   INDEX `idproducts_idx` (`idproduct` ASC) VISIBLE,
